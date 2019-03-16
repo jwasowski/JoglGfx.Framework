@@ -1,0 +1,21 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>windows-amd64</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+			<includes>
+				<include>org.jogamp.jogl:jogl-all:jar:2.3.2</include>
+				<include>org.jogamp.jogl:jogl-all:jar:natives-windows-amd64:2.3.2</include>
+				<include>org.jogamp.gluegen:gluegen-rt:jar:2.3.2</include>
+				<include>org.jogamp.gluegen:gluegen-rt:jar:natives-windows-amd64:2.3.2</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
+</assembly>

@@ -1,0 +1,42 @@
+#version 450 core
+
+layout(location=0) in vec4 inPosition;
+layout(location=2) in vec2 inTexture;
+
+
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+
+out vec2 texCoord;
+
+
+void main(void){
+    gl_Position = (projectionMatrix * viewMatrix * modelMatrix) * inPosition;
+    
+    texCoord = inTexture;
+    /*if(inPosition.x < 0){
+        	if(inPosition.z <0){
+       		 gl_Position = vec4(-0.5,-0.5,0.0,1.0);
+       		} else {
+       			gl_Position = vec4(-0.5,0.5,0.0,1.0);
+       				}
+        } else {
+        if(inPosition.z <0){
+        gl_Position = vec4(0.5,-0.5,0.0,1.0);
+        } else {
+        gl_Position = vec4(0.5,0.5,0.0,1.0);
+        }
+        }*/
+        
+        /*if(gl_VertexID == 0){
+       		 gl_Position = vec4(-0.5,-0.5,0.0,1.0);
+       	} else if(gl_VertexID == 2) {
+       		gl_Position = vec4(0.5,0.5,0.0,1.0);
+       	}
+        if(gl_VertexID == 1){
+        gl_Position = vec4(0.5,-0.5,0.0,1.0);
+        } else if(gl_VertexID == 3) {
+        gl_Position = vec4(-0.5,0.5,0.0,1.0);
+        }*/
+}
