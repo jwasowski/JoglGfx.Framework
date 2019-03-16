@@ -9,10 +9,6 @@ public class ShaderProgramBezier {
 	private ShaderCode vertexShader;
 	private ShaderCode geometryShader;
 	private ShaderCode fragmentShader;
-	public int textureUnitLocation;
-	public int modelMatrixLocation;
-	public int projectionMatrixLocation;
-	public int viewMatrixLocation;
 
 	public int initProgram(GL4 gl4) {
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders", null,
