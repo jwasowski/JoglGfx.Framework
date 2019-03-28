@@ -1,8 +1,16 @@
 package gfx.Utilities.Shaders;
 
+import java.nio.FloatBuffer;
+
 import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
+
+import graphicslib3D.Material;
+import graphicslib3D.Vector3D;
+import graphicslib3D.light.PositionalLight;
+
 
 public class ShaderProgramBezierPatch {
 	private ShaderProgram program;
@@ -14,6 +22,19 @@ public class ShaderProgramBezierPatch {
 	public int modelMatrixLocation;
 	public int projectionMatrixLocation;
 	public int viewMatrixLocation;
+	public int lambdaLocation;
+	private int materialEmissionLocation;
+	private int materialAmbientLocation;
+	private int materialDiffuseLocation;
+	private int materialSpecularLocation;
+	private int materialShininessLocation;
+	public int[] materialLocations;
+	private int lightAmbientLocation;
+	private int lightDiffuseLocation;
+	private int lightSpercularLocation;
+	private int lightPositionLocation;
+	private int lightAttenuationLocation;
+	public int[] lightLocations;
 
 	public int initProgram(GL4 gl4) {
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders/BezierPatch", null,
@@ -35,7 +56,21 @@ public class ShaderProgramBezierPatch {
 		System.out.println("Superprogram: " + program.id());
 		modelMatrixLocation = getUniformLocation("modelMatrix", gl4);
 		viewMatrixLocation = getUniformLocation("viewMatrix", gl4);
-		projectionMatrixLocation = getUniformLocation("projectionMatrix", gl4);
+		//projectionMatrixLocation = getUniformLocation("projectionMatrix", gl4);
+		lambdaLocation = getUniformLocation("lambda", gl4);
+		materialEmissionLocation = getUniformLocation("material.emission", gl4);
+		materialAmbientLocation = getUniformLocation("material.ambient", gl4);
+		materialDiffuseLocation = getUniformLocation("material.diffuse", gl4);
+		materialSpecularLocation = getUniformLocation("material.specular", gl4);
+		materialShininessLocation = getUniformLocation("material.shininess", gl4);
+		materialLocations = new int[] {materialEmissionLocation, materialAmbientLocation, materialDiffuseLocation, materialSpecularLocation, materialShininessLocation};
+		lightAmbientLocation = getUniformLocation("light.ambient", gl4);
+		lightDiffuseLocation= getUniformLocation("light.diffuse", gl4);
+		lightSpercularLocation= getUniformLocation("light.specular", gl4);
+		lightPositionLocation= getUniformLocation("light.position", gl4);
+		lightAttenuationLocation= getUniformLocation("light.attenuation", gl4);
+		lightLocations = new int[] {lightAmbientLocation, lightDiffuseLocation, lightSpercularLocation, lightPositionLocation, lightAttenuationLocation};
+		
 		return program.program();
 	}
 	
@@ -86,6 +121,28 @@ public class ShaderProgramBezierPatch {
 			System.err.println("Error code in SetViewMatrix: " + gl4.glGetError());
 		}
 	}
+	
+	public void setLight(GL4 gl4,  PositionalLight light) {
+		gl4.glUniform4fv(lightLocations[0], 1, GLBuffers.newDirectFloatBuffer(light.getAmbient()));
+		gl4.glUniform4fv(lightLocations[1], 1, GLBuffers.newDirectFloatBuffer(light.getDiffuse()));
+		gl4.glUniform4fv(lightLocations[2], 1, GLBuffers.newDirectFloatBuffer(light.getSpecular()));
+		//TODO Increase performance of handling points data
+		gl4.glUniform4fv(lightLocations[3], 1, GLBuffers.newDirectFloatBuffer(new float[]{(float) light.getPosition().getX(),(float) light.getPosition().getY(), (float) light.getPosition().getZ(), (float) light.getPosition().getW()}));
+		gl4.glUniform3fv(lightLocations[4], 1, GLBuffers.newDirectFloatBuffer(new float[] {light.getConstantAtt(), light.getLinearAtt(), light.getQuadraticAtt()}));
+}
+
+	public void setMaterial(GL4 gl4, Material  material) {
+	gl4.glUniform4fv(materialLocations[0], 1, material.getEmission(), 0);
+	gl4.glUniform4fv(materialLocations[1], 1, material.getAmbient(), 0);
+	gl4.glUniform4fv(materialLocations[2], 1, material.getDiffuse(), 0);
+	gl4.glUniform4fv(materialLocations[3], 1, material.getSpecular(), 0);
+	gl4.glUniform1f(materialLocations[4], material.getShininess());
+}
+
+
+	public void setLambda(GL4 gl4, float lambda) {
+	gl4.glUniform1f(lambdaLocation, lambda);
+}
 	
 	public void disposeProgram(GL4 gl4) {
 		program.destroy(gl4);

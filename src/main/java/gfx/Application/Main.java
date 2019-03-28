@@ -7,6 +7,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 import gfx.Display.Window;
 import gfx.Display.WindowBezier;
+import gfx.Display.WindowBezierPatch;
 
 public class Main {
 
@@ -22,7 +23,8 @@ public class Main {
 		final FPSAnimator animator = new FPSAnimator(window, 60, true);
 		@SuppressWarnings("unused")
 		//Window display = new Window(window, animator, 1280, 720, "Test Framework");
-		WindowBezier bezier = new WindowBezier(window, animator, 1280, 720, "Bezier test");
+		//WindowBezier bezier = new WindowBezier(window, animator, 1280, 720, "Bezier test");
+		WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, 1280, 720, "Bezier test");
 		
 	}
 

@@ -1,15 +1,18 @@
 package gfx.Utilities;
 
+import java.io.File;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.GLBuffers;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 public class TextureLoader {
 
-	public void Init(GLAutoDrawable drawable){
+	/*public void Init(GLAutoDrawable drawable){
 		final GL4 gl4 = drawable.getGL().getGL4();
 		IntBuffer intBuffer = GLBuffers.newDirectIntBuffer(1);
 		gl4.glGenTextures(1, intBuffer);
@@ -25,10 +28,17 @@ public class TextureLoader {
 	    gl4.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
 
 	    gl4.glBindTexture(GL4.GL_TEXTURE_2D, 0);
-	}
+	}*/
 	
-	private void LoadTexture(){
-		
+	public Texture LoadTexture(String textureFileName){
+		Texture tex = null;
+		try {
+			tex = TextureIO.newTexture(new File(textureFileName), false);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return tex;
 	}
 	
 }
