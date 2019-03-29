@@ -1,5 +1,7 @@
 package gfx.Display;
 
+import java.util.Arrays;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
@@ -26,6 +28,7 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	private FPSAnimator animator;
 	private BezierPatch bezierPatchOne = new BezierPatch();
 	private BezierPatch bezierPatchTwo = new BezierPatch();
+	private BezierPatch bezierPatchFloor = new BezierPatch();
 	private ShaderProgramBezierPatch program = new ShaderProgramBezierPatch();
 	private MatrixService matrixService = new MatrixService();
 	private int programId;
@@ -46,6 +49,12 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 			1.0f / 3.0f, -0.5f, 1.0f / 6.0f, -1, 1.0f / 3.0f, -1.5f, 0.5f, 0, 1, 3, 0, 0, 1, 1, 0, -2, 1.0f / 3.0f, -1,
 			0, -2, 1.0f / 3.0f, -3, 0, 0, 1, 2, -1, 0, 1, 2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f,
 			-2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, -2, -1, 0, 1 };
+	private float[] bezierPatchFloorData = { -2, -1, 0, 1, -2.0f / 3.0f, -1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
+			2.0f / 3.0f, -1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2, -1, 0, 1, -2, -1, 0, 1, 2.0f / 3.0f, -1.0f / 3.0f,
+			-4.0f / 3.0f, 1.0f / 3.0f, -2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, 2, -1, 0, 1, 2, -1, 0, 1,
+			-2.0f / 3.0f, -1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2.0f / 3.0f, -1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
+			-2, -1, 0, 1, 2, -1, 0, 1, 2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, -2.0f / 3.0f, -1.0f / 3.0f,
+			-4.0f / 3.0f, 1.0f / 3.0f, -2, -1, 0, 1 };
 
 	public WindowBezierPatch(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
 		this.window = windowPassed;
@@ -88,17 +97,17 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		light.setConstantAtt(0.5f);
 		light.setLinearAtt(0.005f);
 		light.setQuadraticAtt(0.0125f);
-		
-		//TODO Init both Patches and check init process
+
+		// TODO Init both Patches and check init process
 		programId = program.initProgram(gl4);
 		program.setLight(gl4, light, programId);
 		// TODO Check field init
-		bezierPatchOne.setProgram(program);
-		bezierPatchTwo.setProgram(program);
+
 		// TODO Check material in object
 		bezierPatchOne.material = (Material) material.clone();
 		bezierPatchTwo.material = (Material) material.clone();
-		
+		bezierPatchFloor.material = (Material) material.clone();
+
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -10);
@@ -106,11 +115,26 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		// TODO Check wether clone is needed
-		bezierPatchOne.points = bezierPatchOneData.clone();
-		bezierPatchTwo.points = bezierPatchTwoData.clone();
+		bezierPatchOne.pointsOne = bezierPatchOneData;
+		// bezierPatchOne.pointsTwo = bezierPatchTwoData.clone();
+		bezierPatchTwo.pointsOne = bezierPatchTwoData;
+		bezierPatchFloor.pointsOne = bezierPatchFloorData;
+		
+		bezierPatchOne.setProgram(program);
+		bezierPatchTwo.setProgram(program);
+		bezierPatchFloor.setProgram(program);
+		
 		bezierPatchOne.init(drawable);
 		bezierPatchTwo.init(drawable);
+		bezierPatchFloor.init(drawable);
 		
+		matrixService.rotateAboutXAxis(bezierPatchOne.modelMatrixOne, -45);
+		matrixService.translate(bezierPatchOne.modelMatrixOne, 0, 1, 2);
+		/*
+		 * matrixService.rotateAboutXAxis(bezierPatchTwo.modelMatrix, 45);
+		 * matrixService.translate(bezierPatchTwo.modelMatrix, 0, -1, 2);
+		 */
+		// matrixService.translate(bezierPatchTwo.modelMatrix, 0, 1, 2);
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
 		gl4.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -121,19 +145,27 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	public void dispose(GLAutoDrawable drawable) {
 		bezierPatchOne.dispose(drawable);
 		bezierPatchTwo.dispose(drawable);
-
+		bezierPatchFloor.dispose(drawable);
 	}
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		final GL4 gl4 = drawable.getGL().getGL4();
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);
+		bezierPatchFloor.display(drawable);
+		program.setProjectionMatrix(gl4, projectionMatrix, programId);
+		program.setViewMatrix(gl4, viewMatrix, programId);
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		bezierPatchOne.reshape(drawable, 0, 0, width, height);
-		bezierPatchTwo.reshape(drawable, 0, 0, width, height);
+		final GL4 gl4 = drawable.getGL().getGL4();
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
+		program.setProjectionMatrix(gl4, projectionMatrix, programId);
+		gl4.glViewport(0, 0, width, height);
+		// bezierPatchOne.reshape(drawable, 0, 0, width, height);
+		// bezierPatchTwo.reshape(drawable, 0, 0, width, height);
 	}
 
 	private void shutDown() {
@@ -153,6 +185,34 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			shutDown();
+		}
+		// Rotate around Y axis
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			bezierPatchOne.rotateYAxisLeft();
+			bezierPatchTwo.rotateYAxisLeft();
+			bezierPatchFloor.rotateYAxisLeft();
+			// lastInput = KeyEvent.VK_LEFT;
+		}
+		// Rotate around Y axis
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			bezierPatchOne.rotateYAxisRight();
+			bezierPatchTwo.rotateYAxisRight();
+			bezierPatchFloor.rotateYAxisRight();
+			// lastInput = KeyEvent.VK_RIGHT;
+		}
+		// Rotate around X axis
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			bezierPatchOne.rotateXAxisUp();
+			bezierPatchTwo.rotateXAxisUp();
+			bezierPatchFloor.rotateXAxisUp();
+			// lastInput = KeyEvent.VK_UP;
+		}
+		// Rotate around X axis
+		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			bezierPatchOne.rotateXAxisDown();
+			bezierPatchTwo.rotateXAxisDown();
+			bezierPatchFloor.rotateXAxisDown();
+			// lastInput = KeyEvent.VK_DOWN;
 		}
 	}
 
