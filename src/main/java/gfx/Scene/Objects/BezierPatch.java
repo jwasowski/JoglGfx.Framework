@@ -1,6 +1,7 @@
 package gfx.Scene.Objects;
 
 import java.nio.Buffer;
+import java.util.Arrays;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
@@ -8,6 +9,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.GLBuffers;
 
 import gfx.Utilities.DeallocationHelper;
+import gfx.Utilities.MatrixService;
 import gfx.Utilities.Shaders.ShaderProgramBezier;
 import gfx.Utilities.Shaders.ShaderProgramBezierPatch;
 import graphicslib3D.Material;
@@ -15,25 +17,31 @@ import graphicslib3D.Material;
 public class BezierPatch {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
-	protected final int[] indexBufferObject = new int[1];
+	// protected final int[] indexBufferObject = new int[1];
 	public float[] modelMatrix = new float[16];
-	
+	private MatrixService matrixService = new MatrixService();
 	private ShaderProgramBezierPatch program;
 	private Buffer fbVertices;
-	private Buffer ibIndices;
+	// private Buffer ibIndices;
 	public float[] points;
-	
+	public Material material;
+
 	public void setProgram(ShaderProgramBezierPatch program) {
 		this.program = program;
 	}
-	
+
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		
+		matrixService.setupUnitMatrix(modelMatrix);
+		matrixService.translate(modelMatrix, 0, 0, -2);
 		// Voa Setup
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		// Vbo vertices Setup
+		System.out.println("Points value: " + Arrays.toString(points));
+		System.out.println("Material values: " + Arrays.toString(material.getAmbient()) + ", "
+				+ Arrays.toString(material.getDiffuse()) + "," + Arrays.toString(material.getSpecular()) + ", "
+				+ Arrays.toString(material.getEmission()) + "," + material.getShininess());
 		fbVertices = GLBuffers.newDirectFloatBuffer(points);
 		final long verticesBufferSizeInBytes = points.length * Buffers.SIZEOF_FLOAT;
 		// Stride defines how many bytes there are in one set of vertex position
@@ -47,18 +55,7 @@ public class BezierPatch {
 		gl4.glEnableVertexAttribArray(0);
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		gl4.glBindVertexArray(0);
-		
-		/*glGenVertexArrays(1,&vao_);
-	    glBindVertexArray(vao_);
 
-	    glGenBuffers(1, &vertex_buffer_);
-	    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_);
-	    glBufferData(GL_ARRAY_BUFFER, 64*sizeof(GLfloat), points, GL_STATIC_DRAW);
-	    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	    glEnableVertexAttribArray(0);
-
-	    glBindBuffer(GL_ARRAY_BUFFER, 0);
-	    glBindVertexArray(0);*/
 	}
 
 	public void dispose(GLAutoDrawable drawable) {
@@ -68,7 +65,7 @@ public class BezierPatch {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
-			//deallocator.deallocate(fB);
+			deallocator.deallocate(fbVertices);
 		} else {
 			System.err.println(
 					"Java version: " + System.getProperty("java.version") + " is not supported by buffer deallocator.");
@@ -83,38 +80,22 @@ public class BezierPatch {
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
-		gl4.glUseProgram(program.getProgramId());
+
 		gl4.glBindVertexArray(vertexArrayObject[0]);
+		gl4.glUseProgram(program.getProgramId());
 		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
-		gl4.glDrawElements(GL4.GL_TRIANGLES, 10/*indices.length*/, GL4.GL_UNSIGNED_INT, 0);
+		program.setMaterial(gl4, material, program.getProgramId());
+		gl4.glEnable(GL4.GL_CULL_FACE);
+		gl4.glCullFace(GL4.GL_BACK);
+		program.setLambda(gl4, 1, program.getProgramId());
+		gl4.glFrontFace(GL4.GL_CW);
+		gl4.glPatchParameteri(GL4.GL_PATCH_VERTICES, 16);
+
+		gl4.glDrawArrays(GL4.GL_PATCHES, 0, 16);
+
+		gl4.glDisable(GL4.GL_CULL_FACE);
 		gl4.glBindVertexArray(0);
 		gl4.glUseProgram(0);
-		
-		/*glBindVertexArray(vao_);
-
-    glUseProgram(program);
-    program.SetModelMatrix(model_matrix_);
-    program.SetMaterial(material_);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-
-
-    program.SetLambda(1);
-    glFrontFace(GL_CW);
-
-    glPatchParameteri(GL_PATCH_VERTICES, 16);
-    glDrawArrays(GL_PATCHES, 0, 16);
-
-    program.SetLambda(-1);
-    glFrontFace(GL_CCW);
-
-    glPatchParameteri(GL_PATCH_VERTICES, 16);
-    glDrawArrays(GL_PATCHES, 0, 16);
-
-
-    glDisable(GL_CULL_FACE);
-    glBindVertexArray(0);
-    glUseProgram(0);*/
 	}
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {

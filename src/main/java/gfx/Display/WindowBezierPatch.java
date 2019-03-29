@@ -88,40 +88,52 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		light.setConstantAtt(0.5f);
 		light.setLinearAtt(0.005f);
 		light.setQuadraticAtt(0.0125f);
+		
 		//TODO Init both Patches and check init process
 		programId = program.initProgram(gl4);
-
+		program.setLight(gl4, light, programId);
 		// TODO Check field init
 		bezierPatchOne.setProgram(program);
+		bezierPatchTwo.setProgram(program);
+		// TODO Check material in object
+		bezierPatchOne.material = (Material) material.clone();
+		bezierPatchTwo.material = (Material) material.clone();
+		
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
-		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.5f, 100.0f);
-		program.setViewMatrix(gl4, viewMatrix, programId);
+		matrixService.translate(viewMatrix, 0, 0, -10);
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
-		
+		program.setViewMatrix(gl4, viewMatrix, programId);
+		// TODO Check wether clone is needed
+		bezierPatchOne.points = bezierPatchOneData.clone();
+		bezierPatchTwo.points = bezierPatchTwoData.clone();
 		bezierPatchOne.init(drawable);
+		bezierPatchTwo.init(drawable);
+		
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
-		gl4.glClearColor(0.25f, 0.75f, 0.35f, 0.0f);
+		gl4.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	}
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
 		bezierPatchOne.dispose(drawable);
+		bezierPatchTwo.dispose(drawable);
 
 	}
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		bezierPatchOne.display(drawable);
-
+		bezierPatchTwo.display(drawable);
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		bezierPatchOne.reshape(drawable, 0, 0, width, height);
-
+		bezierPatchTwo.reshape(drawable, 0, 0, width, height);
 	}
 
 	private void shutDown() {
