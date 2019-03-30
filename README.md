@@ -9,7 +9,7 @@ jogl-JW-project Computer graphics class Project continuation using JOGL.
 ### Requirements
 
 Project requirements are Java 8+, IDE like Eclipse or InteliJ, configured Maven for dependency management and OpenGL 4.x capable GPU.<br />
-It will not run on Java 11 due to changes in how dependencies are managed.
+It may not run on Java 11 due to changes in how dependencies are managed.
 
 ### Running Application
 
@@ -23,6 +23,12 @@ PageUp - zoom in
 PageDown - zoom out
 Escape - close app
 ```
+To create a jar with the app, simply use maven command:
+```
+mvn package
+```
+in project root folder.
+
 ## Authors
 
 * **Jakub Wąsowski** - [JWasowski](https://github.com/jwasowski)
