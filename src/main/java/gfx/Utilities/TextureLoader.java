@@ -3,6 +3,7 @@ package gfx.Utilities;
 import java.io.File;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
+import java.nio.file.Paths;
 
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -33,7 +34,8 @@ public class TextureLoader {
 	public Texture LoadTexture(String textureFileName){
 		Texture tex = null;
 		try {
-			tex = TextureIO.newTexture(new File(textureFileName), false);
+			File file = Paths.get(this.getClass().getResource(textureFileName).toURI()).toFile();
+			tex = TextureIO.newTexture(file, false);
 		}
 		catch(Exception e) {
 			e.printStackTrace();

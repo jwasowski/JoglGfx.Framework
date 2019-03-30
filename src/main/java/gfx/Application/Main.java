@@ -8,6 +8,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import gfx.Display.Window;
 import gfx.Display.WindowBezier;
 import gfx.Display.WindowBezierPatch;
+import gfx.Display.WindowModelImport;
 
 public class Main {
 
@@ -21,10 +22,12 @@ public class Main {
 		// Create the OpenGL rendering canvas
 		final GLWindow window = GLWindow.create(caps);
 		final FPSAnimator animator = new FPSAnimator(window, 60, true);
+		int height = 720, width = 1280;
 		@SuppressWarnings("unused")
-		//Window display = new Window(window, animator, 1280, 720, "Test Framework");
-		//WindowBezier bezier = new WindowBezier(window, animator, 1280, 720, "Bezier test");
-		WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, 1280, 720, "Bezier test");
+		//Window display = new Window(window, animator, width, height, "Test Framework");
+		//WindowBezier bezier = new WindowBezier(window, animator, width, height, "Bezier test");
+		//WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
+		WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
 		
 	}
 
