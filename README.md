@@ -1,1 +1,33 @@
 # JoglGfx.Framework
+This project is about learning how to use OpenGL. It is written in Java using "Java OpenGL" from JoGAmp project https://jogamp.org/ <br />
+
+## Status
+
+jogl-JW-project Computer graphics class Project continuation using JOGL.
+
+
+### Requirements
+
+Project requirements are Java 8+, IDE like Eclipse or InteliJ, configured Maven for dependency management and OpenGL 4.x capable GPU.<br />
+It will not run on Java 11 due to changes in how dependencies are managed.
+
+### Running Application
+
+To run the app, you simply have to import the project into your IDE and then launch it ("Run" button in Eclipse IDE).
+Typical Controls are following (version dependent):
+```
+Arrow keys manipulate  different axsises
+Home - switch to Perspective Projection
+End - switch to Orthogonal Projection
+PageUp - zoom in
+PageDown - zoom out
+Escape - close app
+```
+## Authors
+
+* **Jakub Wąsowski** - [JWasowski](https://github.com/jwasowski)
+
+## License
+
+This project is licensed under the GNU General Public License v2.0 - see the [LICENSE.md](LICENSE) file for details <br />
+JogAmp license - see https://jogamp.org/git/?p=jogl.git;a=blob;f=LICENSE.txt for details
