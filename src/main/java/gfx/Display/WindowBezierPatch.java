@@ -1,7 +1,5 @@
 package gfx.Display;
 
-import java.util.Arrays;
-
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
@@ -15,10 +13,8 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import gfx.Scene.Objects.BezierPatch;
-import gfx.Scene.Objects.TexturedPlane;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.Shaders.ShaderProgramBezierPatch;
-import gfx.Utilities.Shaders.ShaderProgramCombined;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.light.PositionalLight;
@@ -98,12 +94,9 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		light.setLinearAtt(0.005f);
 		light.setQuadraticAtt(0.0125f);
 
-		// TODO Init both Patches and check init process
 		programId = program.initProgram(gl4);
 		program.setLight(gl4, light, programId);
-		// TODO Check field init
 
-		// TODO Check material in object
 		bezierPatchOne.material = (Material) material.clone();
 		bezierPatchTwo.material = (Material) material.clone();
 		bezierPatchFloor.material = (Material) material.clone();
@@ -114,9 +107,9 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
-		// TODO Check wether clone is needed
+
 		bezierPatchOne.pointsOne = bezierPatchOneData;
-		// bezierPatchOne.pointsTwo = bezierPatchTwoData.clone();
+		
 		bezierPatchTwo.pointsOne = bezierPatchTwoData;
 		bezierPatchFloor.pointsOne = bezierPatchFloorData;
 		
@@ -128,13 +121,6 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		bezierPatchTwo.init(drawable);
 		bezierPatchFloor.init(drawable);
 		
-		matrixService.rotateAboutXAxis(bezierPatchOne.modelMatrixOne, -45);
-		matrixService.translate(bezierPatchOne.modelMatrixOne, 0, 1, 2);
-		/*
-		 * matrixService.rotateAboutXAxis(bezierPatchTwo.modelMatrix, 45);
-		 * matrixService.translate(bezierPatchTwo.modelMatrix, 0, -1, 2);
-		 */
-		// matrixService.translate(bezierPatchTwo.modelMatrix, 0, 1, 2);
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
 		gl4.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -151,6 +137,7 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
+		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);
 		bezierPatchFloor.display(drawable);
@@ -164,8 +151,6 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		gl4.glViewport(0, 0, width, height);
-		// bezierPatchOne.reshape(drawable, 0, 0, width, height);
-		// bezierPatchTwo.reshape(drawable, 0, 0, width, height);
 	}
 
 	private void shutDown() {

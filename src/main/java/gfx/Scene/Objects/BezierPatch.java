@@ -16,16 +16,12 @@ import graphicslib3D.Material;
 public class BezierPatch {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
-	// protected final int[] indexBufferObject = new int[1];
 	public float[] modelMatrixOne = new float[16];
-	//public float[] modelMatrixTwo = new float[16];
 	private MatrixService matrixService = new MatrixService();
 	private ShaderProgramBezierPatch program;
 	private Buffer fbPointsOne;
-	//private Buffer fbPointsTwo;
-	// private Buffer ibIndices;
+	
 	public float[] pointsOne;
-	//public float[] pointsTwo;
 	public Material material;
 
 	public void setProgram(ShaderProgramBezierPatch program) {
@@ -35,7 +31,6 @@ public class BezierPatch {
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		matrixService.setupUnitMatrix(modelMatrixOne);
-		//matrixService.setupUnitMatrix(modelMatrixTwo);
 		// Voa Setup
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		gl4.glBindVertexArray(vertexArrayObject[0]);
@@ -70,13 +65,13 @@ public class BezierPatch {
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
 			deallocator.deallocate(fbPointsOne);
-			//deallocator.deallocate(fbPointsTwo);
 		} else {
 			System.err.println(
 					"Java version: " + System.getProperty("java.version") + " is not supported by buffer deallocator.");
 		}
 		gl4.glBindVertexArray(0);
 		gl4.glDeleteVertexArrays(1, vertexArrayObject, 0);
+		//TODO Fix NPE when dispose is chaining from different objects
 		if (program.getProgramId() != 0) {
 			program.disposeProgram(gl4);
 		}
@@ -84,7 +79,7 @@ public class BezierPatch {
 
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		
 
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		gl4.glUseProgram(program.getProgramId());
