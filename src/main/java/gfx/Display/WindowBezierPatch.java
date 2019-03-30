@@ -35,13 +35,13 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	private float[] viewMatrix = new float[16];
 	int width, height;
 	// TODO Check data input format
-	private float[] bezierPatchOneData = { -2f, 1f, 0f, 1f, -2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
+	private float[] bezierPatchOneData = { -3f, 1f, 0f, 1f, -2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
 			2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2, 1, 0, 1, -1.5f, 0.5f, 0, 1, -0.5f, 1.0f / 6.0f, 1,
 			1.0f / 3.0f, 0.5f, 1.0f / 6.0f, 1, 1.0f / 3.0f, 1.5f, 0.5f, 0, 1, -3, 0, 0, 1, -1, 0, 2, 1.0f / 3.0f, 1, 0,
 			2, 1.0f / 3.0f, 3, 0, 0, 1, -2, -1, 0, 1, -2.0f / 3.0f, -1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2.0f / 3.0f,
 			-1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2, -1, 0, 1 };
 	private float[] bezierPatchTwoData = { 2, 1, 0, 1, 2.0f / 3.0f, 1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f,
-			-2.0f / 3.0f, 1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, -2, 1, 0, 1, 1.5f, 0.5f, 0, 1, 0.5f, 1.0f / 6.0f, -1,
+			-2.0f / 3.0f, 1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, -3, 1, 0, 1, 1.5f, 0.5f, 0, 1, 0.5f, 1.0f / 6.0f, -1,
 			1.0f / 3.0f, -0.5f, 1.0f / 6.0f, -1, 1.0f / 3.0f, -1.5f, 0.5f, 0, 1, 3, 0, 0, 1, 1, 0, -2, 1.0f / 3.0f, -1,
 			0, -2, 1.0f / 3.0f, -3, 0, 0, 1, 2, -1, 0, 1, 2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f,
 			-2.0f / 3.0f, -1.0f / 3.0f, -4.0f / 3.0f, 1.0f / 3.0f, -2, -1, 0, 1 };
