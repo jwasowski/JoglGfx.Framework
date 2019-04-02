@@ -1,5 +1,12 @@
 package gfx.Display;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.jogamp.newt.event.InputEvent;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
@@ -27,6 +34,8 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	private BezierPatch bezierPatchFloor = new BezierPatch();
 	private ShaderProgramBezierPatch program = new ShaderProgramBezierPatch();
 	private MatrixService matrixService = new MatrixService();
+	// Concurrency exception safe Set
+	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
 	private int programId;
 	Material material = new Material();
 	PositionalLight light = new PositionalLight();
@@ -138,6 +147,7 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		controlKeyboard();
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);
 		bezierPatchFloor.display(drawable);
@@ -166,44 +176,122 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		}.start();
 	}
 
+	public void controlKeyboard(){
+		if(!keySet.isEmpty()){
+		keySet.forEach( keyEvent -> {
+			if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT){
+				rotateYLeft();
+			}
+			if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT){
+				rotateYRight();
+			}
+			if(keyEvent.getKeyCode() == KeyEvent.VK_UP){
+				rotateXUp();
+			}
+			if(keyEvent.getKeyCode() == KeyEvent.VK_DOWN){
+				rotateXDown();
+			}
+		});}
+	}
+	
+	public void rotateYLeft(){
+		bezierPatchOne.rotateYAxisLeft();
+		bezierPatchTwo.rotateYAxisLeft();
+		bezierPatchFloor.rotateYAxisLeft();
+	}
+	
+	public void rotateYRight(){
+		bezierPatchOne.rotateYAxisRight();
+		bezierPatchTwo.rotateYAxisRight();
+		bezierPatchFloor.rotateYAxisRight();
+	}
+	
+	public void rotateXUp(){
+		bezierPatchOne.rotateXAxisUp();
+		bezierPatchTwo.rotateXAxisUp();
+		bezierPatchFloor.rotateXAxisUp();
+	}
+	
+	public void rotateXDown(){
+		bezierPatchOne.rotateXAxisDown();
+		bezierPatchTwo.rotateXAxisDown();
+		bezierPatchFloor.rotateXAxisDown();
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
+		
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			shutDown();
 		}
 		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			bezierPatchOne.rotateYAxisLeft();
-			bezierPatchTwo.rotateYAxisLeft();
-			bezierPatchFloor.rotateYAxisLeft();
-			// lastInput = KeyEvent.VK_LEFT;
+		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			System.out.println(e.isAutoRepeat());
+			
+			keySet.add(e);
+
 		}
 		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			bezierPatchOne.rotateYAxisRight();
-			bezierPatchTwo.rotateYAxisRight();
-			bezierPatchFloor.rotateYAxisRight();
-			// lastInput = KeyEvent.VK_RIGHT;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			
+			keySet.add(e);
+			
 		}
 		// Rotate around X axis
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			bezierPatchOne.rotateXAxisUp();
-			bezierPatchTwo.rotateXAxisUp();
-			bezierPatchFloor.rotateXAxisUp();
-			// lastInput = KeyEvent.VK_UP;
+		if (e.getKeyCode() == KeyEvent.VK_UP && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			
+			keySet.add(e);
+			
 		}
 		// Rotate around X axis
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			bezierPatchOne.rotateXAxisDown();
-			bezierPatchTwo.rotateXAxisDown();
-			bezierPatchFloor.rotateXAxisDown();
-			// lastInput = KeyEvent.VK_DOWN;
+		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			
+			keySet.add(e);
+			
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		// Rotate around Y axis
+		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			//e.setAttachment("left");
+			for(KeyEvent keyEvent : keySet){
+				if(keyEvent.getKeyCode() == KeyEvent.VK_LEFT){
+					keySet.remove(keyEvent);	
+				}
+			}
+			
+			System.out.println("Released");
+			
+		}
+		
+		// Rotate around Y axis
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for(KeyEvent keyEvent : keySet){
+				if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT){
+					keySet.remove(keyEvent);	
+				}
+			}
+			System.out.println("Released");
+					
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for(KeyEvent keyEvent : keySet){
+				if(keyEvent.getKeyCode() == KeyEvent.VK_UP){
+					keySet.remove(keyEvent);	
+				}
+			}
+			System.out.println("Released");
+		}
+		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for(KeyEvent keyEvent : keySet){
+				if(keyEvent.getKeyCode() == KeyEvent.VK_DOWN){
+					keySet.remove(keyEvent);	
+				}
+			}
+			System.out.println("Released");
+		}
 
 	}
 

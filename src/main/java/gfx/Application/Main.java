@@ -26,8 +26,8 @@ public class Main {
 		@SuppressWarnings("unused")
 		//Window display = new Window(window, animator, width, height, "Test Framework");
 		//WindowBezier bezier = new WindowBezier(window, animator, width, height, "Bezier test");
-		//WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
-		WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
+		WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
+		//WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
 		
 	}
 
