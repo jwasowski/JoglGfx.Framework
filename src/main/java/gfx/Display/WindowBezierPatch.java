@@ -1,32 +1,25 @@
 package gfx.Display;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.jogamp.newt.event.InputEvent;
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import gfx.Scene.Objects.BezierPatch;
 import gfx.Utilities.MatrixService;
+import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
+import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramBezierPatch;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.light.PositionalLight;
 
-public class WindowBezierPatch implements GLEventListener, MouseListener, KeyListener {
+@SuppressWarnings("deprecation")
+public class WindowBezierPatch implements GLEventListener {
 	private GLWindow window;
 	private FPSAnimator animator;
 	private BezierPatch bezierPatchOne = new BezierPatch();
@@ -34,15 +27,17 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	private BezierPatch bezierPatchFloor = new BezierPatch();
 	private ShaderProgramBezierPatch program = new ShaderProgramBezierPatch();
 	private MatrixService matrixService = new MatrixService();
-	// Concurrency exception safe Set
-	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
+	KeyboardController keyboardController = new KeyboardController(bezierPatchOne, bezierPatchTwo, bezierPatchFloor,
+			this);
+	MouseController mouseController = new MouseController(this);
 	private int programId;
 	Material material = new Material();
 	PositionalLight light = new PositionalLight();
 	Point3D plocation;
+	GLU glu = new GLU();
 	private float[] projectionMatrix = new float[16];
-	private float[] viewMatrix = new float[16];
-	int width, height;
+	public float[] viewMatrix = new float[16];
+	private int width, height;
 	// TODO Check data input format
 	private float[] bezierPatchOneData = { -3f, 1f, 0f, 1f, -2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
 			2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2, 1, 0, 1, -1.5f, 0.5f, 0, 1, -0.5f, 1.0f / 6.0f, 1,
@@ -73,8 +68,8 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 			};
 		});
 		window.addGLEventListener(this);
-		window.addMouseListener(this);
-		window.addKeyListener(this);
+		//window.addMouseListener(mouseController);
+		window.addKeyListener(keyboardController);
 		window.setSize(width, height);
 		window.setTitle(name);
 		window.setVisible(true);
@@ -118,18 +113,18 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		program.setViewMatrix(gl4, viewMatrix, programId);
 
 		bezierPatchOne.pointsOne = bezierPatchOneData;
-		
+
 		bezierPatchTwo.pointsOne = bezierPatchTwoData;
 		bezierPatchFloor.pointsOne = bezierPatchFloorData;
-		
+
 		bezierPatchOne.setProgram(program);
 		bezierPatchTwo.setProgram(program);
 		bezierPatchFloor.setProgram(program);
-		
+
 		bezierPatchOne.init(drawable);
 		bezierPatchTwo.init(drawable);
 		bezierPatchFloor.init(drawable);
-		
+
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
 		gl4.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -147,7 +142,8 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
-		controlKeyboard();
+		keyboardController.controlKeyboard();
+		lookAt();
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);
 		bezierPatchFloor.display(drawable);
@@ -163,7 +159,7 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		gl4.glViewport(0, 0, width, height);
 	}
 
-	private void shutDown() {
+	public void shutDown() {
 		// Use a dedicate thread to run the stop() to ensure that the
 		// animator stops before program exits.
 		new Thread() {
@@ -176,170 +172,8 @@ public class WindowBezierPatch implements GLEventListener, MouseListener, KeyLis
 		}.start();
 	}
 
-	public void controlKeyboard(){
-		if(!keySet.isEmpty()){
-		keySet.forEach( keyEvent -> {
-			if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT){
-				rotateYLeft();
-			}
-			if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT){
-				rotateYRight();
-			}
-			if(keyEvent.getKeyCode() == KeyEvent.VK_UP){
-				rotateXUp();
-			}
-			if(keyEvent.getKeyCode() == KeyEvent.VK_DOWN){
-				rotateXDown();
-			}
-		});}
-	}
-	
-	public void rotateYLeft(){
-		bezierPatchOne.rotateYAxisLeft();
-		bezierPatchTwo.rotateYAxisLeft();
-		bezierPatchFloor.rotateYAxisLeft();
-	}
-	
-	public void rotateYRight(){
-		bezierPatchOne.rotateYAxisRight();
-		bezierPatchTwo.rotateYAxisRight();
-		bezierPatchFloor.rotateYAxisRight();
-	}
-	
-	public void rotateXUp(){
-		bezierPatchOne.rotateXAxisUp();
-		bezierPatchTwo.rotateXAxisUp();
-		bezierPatchFloor.rotateXAxisUp();
-	}
-	
-	public void rotateXDown(){
-		bezierPatchOne.rotateXAxisDown();
-		bezierPatchTwo.rotateXAxisDown();
-		bezierPatchFloor.rotateXAxisDown();
-	}
-	
-	@Override
-	public void keyPressed(KeyEvent e) {
-		
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			shutDown();
-		}
-		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			System.out.println(e.isAutoRepeat());
-			
-			keySet.add(e);
-
-		}
-		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			
-			keySet.add(e);
-			
-		}
-		// Rotate around X axis
-		if (e.getKeyCode() == KeyEvent.VK_UP && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			
-			keySet.add(e);
-			
-		}
-		// Rotate around X axis
-		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			
-			keySet.add(e);
-			
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			//e.setAttachment("left");
-			for(KeyEvent keyEvent : keySet){
-				if(keyEvent.getKeyCode() == KeyEvent.VK_LEFT){
-					keySet.remove(keyEvent);	
-				}
-			}
-			
-			System.out.println("Released");
-			
-		}
-		
-		// Rotate around Y axis
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			for(KeyEvent keyEvent : keySet){
-				if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT){
-					keySet.remove(keyEvent);	
-				}
-			}
-			System.out.println("Released");
-					
-		}
-		if (e.getKeyCode() == KeyEvent.VK_UP && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			for(KeyEvent keyEvent : keySet){
-				if(keyEvent.getKeyCode() == KeyEvent.VK_UP){
-					keySet.remove(keyEvent);	
-				}
-			}
-			System.out.println("Released");
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == ( InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			for(KeyEvent keyEvent : keySet){
-				if(keyEvent.getKeyCode() == KeyEvent.VK_DOWN){
-					keySet.remove(keyEvent);	
-				}
-			}
-			System.out.println("Released");
-		}
-
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-
+	private void lookAt() {
+		glu.gluLookAt(viewMatrix[0], viewMatrix[5], viewMatrix[10],
+				mouseController.mouseCoords[0], mouseController.mouseCoords[1], 0/* z */, 0, 1, 0);
 	}
 }
