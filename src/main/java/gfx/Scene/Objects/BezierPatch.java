@@ -72,8 +72,9 @@ public class BezierPatch {
 		gl4.glBindVertexArray(0);
 		gl4.glDeleteVertexArrays(1, vertexArrayObject, 0);
 		//TODO Fix NPE when dispose is chaining from different objects
-		if (program.getProgramId() != 0) {
+		if (program.disposedFlag != true) {
 			program.disposeProgram(gl4);
+			
 		}
 	}
 

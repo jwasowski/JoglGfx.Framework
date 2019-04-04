@@ -1,14 +1,11 @@
 package gfx.Utilities.Shaders;
 
-import java.nio.FloatBuffer;
-
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 
 import graphicslib3D.Material;
-import graphicslib3D.Vector3D;
 import graphicslib3D.light.PositionalLight;
 
 public class ShaderProgramBezierPatch {
@@ -34,6 +31,7 @@ public class ShaderProgramBezierPatch {
 	private int lightPositionLocation;
 	private int lightAttenuationLocation;
 	public int[] lightLocations;
+	public boolean disposedFlag;
 
 	public int initProgram(GL4 gl4) {
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders/BezierPatch", null,
@@ -162,7 +160,9 @@ public class ShaderProgramBezierPatch {
 
 	public void disposeProgram(GL4 gl4) {
 		program.destroy(gl4);
+		System.out.println("SHADER PROGRAM STATUS: Destroyed");
 		// Just to be sure
 		program = null;
+		disposedFlag = true;
 	}
 }
