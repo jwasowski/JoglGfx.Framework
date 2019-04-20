@@ -36,10 +36,10 @@ public class BezierPatch {
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		// Vbo vertices Setup
 		gl4.glGenBuffers(vertexBufferObject.length, vertexBufferObject, 0);
-		System.out.println("Points value: " + Arrays.toString(pointsOne));
+		/*System.out.println("Points value: " + Arrays.toString(pointsOne));
 		System.out.println("Material values: " + Arrays.toString(material.getAmbient()) + ", "
 				+ Arrays.toString(material.getDiffuse()) + "," + Arrays.toString(material.getSpecular()) + ", "
-				+ Arrays.toString(material.getEmission()) + "," + material.getShininess());
+				+ Arrays.toString(material.getEmission()) + "," + material.getShininess());*/
 		fbPointsOne = GLBuffers.newDirectFloatBuffer(pointsOne);
 		final long pointsOneBufferSizeInBytes = pointsOne.length * Buffers.SIZEOF_FLOAT;
 		// Stride defines how many bytes there are in one set of vertex position

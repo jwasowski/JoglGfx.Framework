@@ -1,6 +1,9 @@
 package gfx.Scene.Objects;
 
+import java.nio.DoubleBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
@@ -8,8 +11,10 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.texture.Texture;
 
+import gfx.DataModels.ModelPart;
 import gfx.Utilities.DeallocationHelper;
 import gfx.Utilities.MatrixService;
+import gfx.Utilities.ModelImporter;
 import gfx.Utilities.Shaders.ShaderProgramBezierPatch;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
 import graphicslib3D.Material;
@@ -18,8 +23,10 @@ public class ImportedModel {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
 	public float[] modelMatrixOne = new float[16];
-	public float[] vertexData;
+	List<ModelPart> modelParts = new ArrayList<ModelPart>();
+	private ModelImporter modelImporter = new ModelImporter();
 	private MatrixService matrixService = new MatrixService();
+	private DoubleBuffer dbBuffer;
 	
 	private ShaderProgramImportModel program;
 	public Texture texture;
@@ -43,7 +50,7 @@ public class ImportedModel {
 		System.out.println("Material values: " + Arrays.toString(material.getAmbient()) + ", "
 				+ Arrays.toString(material.getDiffuse()) + "," + Arrays.toString(material.getSpecular()) + ", "
 				+ Arrays.toString(material.getEmission()) + "," + material.getShininess());
-		fbPointsOne = GLBuffers.newDirectFloatBuffer(vertexData);
+		dbBuffer = GLBuffers.newDirectDoubleBuffer(vertexData);
 		final long pointsOneBufferSizeInBytes = vertexData.length * Buffers.SIZEOF_FLOAT;
 		// Stride defines how many bytes there are in one set of vertex position
 		// and color. That's four floats per vertex position and four floats per
@@ -51,13 +58,15 @@ public class ImportedModel {
 		final int stride = 4 * Buffers.SIZEOF_FLOAT;
 		
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, vertexBufferObject[0]);
-		gl4.glBufferData(GL4.GL_ARRAY_BUFFER, pointsOneBufferSizeInBytes, fbPointsOne, GL4.GL_STATIC_DRAW);
+		gl4.glBufferData(GL4.GL_ARRAY_BUFFER, pointsOneBufferSizeInBytes, dbBuffer, GL4.GL_STATIC_DRAW);
 		gl4.glVertexAttribPointer(0, 4, GL4.GL_FLOAT, false, stride, 0);
 		gl4.glEnableVertexAttribArray(0);
 		
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		gl4.glBindVertexArray(0);*/
 
+		modelImporter.loadModel("krajobraz.obj", modelParts);
+		//modelParts.get(0).vertexData.forEach(doubleI -> System.out.println(Arrays.toString(doubleI)));
 	}
 
 	public void dispose(GLAutoDrawable drawable) {
@@ -83,7 +92,7 @@ public class ImportedModel {
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		
-
+/*
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		gl4.glUseProgram(program.getProgramId());
 		program.setModelMatrix(gl4, modelMatrixOne, program.getProgramId());
@@ -103,7 +112,7 @@ public class ImportedModel {
 		
 		gl4.glDisable(GL4.GL_CULL_FACE);
 		gl4.glBindVertexArray(0);
-		gl4.glUseProgram(0);
+		gl4.glUseProgram(0);*/
 	}
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {

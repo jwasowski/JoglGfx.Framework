@@ -34,7 +34,7 @@ public class TextureLoader {
 	public Texture LoadTexture(String textureFileName){
 		Texture tex = null;
 		try {
-			File file = Paths.get(this.getClass().getResource(textureFileName).toURI()).toFile();
+			File file = Paths.get(this.getClass().getResource("/textures/"+textureFileName).toURI()).toFile();
 			tex = TextureIO.newTexture(file, false);
 		}
 		catch(Exception e) {

@@ -81,7 +81,7 @@ public class WindowModelImport implements GLEventListener {
 		
 		importedModel.setProgram(program);
 		//TODO Load Data and Material
-		importedModel.vertexData = new float[] {1f};
+		//importedModel.vertexData = new double[] {1f};
 		importedModel.material = new Material();
 		String url = "/textures/ziemia.tga";
 		importedModel.texture = textureLoader.LoadTexture(url);

@@ -5,10 +5,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.FPSAnimator;
 
-import gfx.Display.Window;
-import gfx.Display.WindowBezier;
-import gfx.Display.WindowBezierPatch;
-import gfx.Display.WindowModelImport;
+import gfx.Display.Tests.WindowTextureTest;
 
 public class Main {
 
@@ -26,9 +23,9 @@ public class Main {
 		@SuppressWarnings("unused")
 		//Window display = new Window(window, animator, width, height, "Test Framework");
 		//WindowBezier bezier = new WindowBezier(window, animator, width, height, "Bezier test");
-		WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
+		//WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
 		//WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
-		
+		WindowTextureTest textureTest = new WindowTextureTest(window, animator, width, height, "Texturing test");
 	}
 
 }
