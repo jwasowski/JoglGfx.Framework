@@ -3,8 +3,11 @@ This project is about learning how to use OpenGL. It is written in Java using "J
 
 ## Status
 
-jogl-JW-project Computer graphics class Project continuation using JOGL.
-
+jogl-JW-project Computer graphics class Project continuation using JOGL. <br />
+Goals for future versions:<br />
+Complete assignments -> Framework version 1.0<br />
+Implement Shadow mapping -> Framework version 1.1<br />
+Extraction of Interfaces and  modeling of Superclasses -> Framework version 1.2<br />
 
 ### Requirements
 
