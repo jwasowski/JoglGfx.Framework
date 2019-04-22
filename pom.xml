@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>JoglGfx</groupId>
 	<artifactId>Framework</artifactId>
-	<version>0.30.0</version>
+	<version>0.30.5</version>
 	<name>JWFramework</name>
 	<description>JoGL based Framework for gfx classes</description>
 	<dependencies>

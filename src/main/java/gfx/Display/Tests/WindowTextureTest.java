@@ -26,6 +26,10 @@ public class WindowTextureTest implements GLEventListener {
 	private float[] projectionMatrix = new float[16];
 	public float[] viewMatrix = new float[16];
 	public float[] modelMatrix = new float[16];
+	public float[] modelMatrixTwo = new float[16];
+	public float[] modelMatrixThree = new float[16];
+	public float[] modelMatrixFour = new float[16];
+	public float[] modelMatrixFive = new float[16];
 	public float[] vertexData = {-1f, -1f, 1f, 1f, -1f, 1f, 0f, 1f, 0f,
 								   1f, -1f, 1f, 1f, -1f, -1f, 0f, 1f, 0f,
 								   1f, -1f, -1f, -1f, -1f, -1f, 0f, 1f, 0f,
@@ -40,7 +44,13 @@ public class WindowTextureTest implements GLEventListener {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[2];
 	public int testTextureId;
-	public Texture testTexture; 
+	public int testTextureTwoId;
+	public int testTextureThreeId;
+	public int testTextureJPGId;
+	public Texture testTexture;
+	public Texture testTextureTwo;
+	public Texture testTextureThree;
+	public Texture testTextureJPG;
 	public FloatBuffer fbVertices;
 	public FloatBuffer textureCoords;
 	
@@ -69,8 +79,22 @@ public class WindowTextureTest implements GLEventListener {
 		programId = program.initProgram(gl4);
 		testTexture = textureLoader.LoadTexture("ziemia.tga");
 		testTextureId = testTexture.getTextureObject();
+		testTextureTwo = textureLoader.LoadTexture("merkury.tga");
+		testTextureTwoId = testTextureTwo.getTextureObject();
+		testTextureThree = textureLoader.LoadTexture("ksiezyc.tga");
+		testTextureThreeId = testTextureThree.getTextureObject();
+		testTextureJPG = textureLoader.LoadTexture("mars_1k_color.jpg");
+		testTextureJPGId = testTextureJPG.getTextureObject();
 		
 		matrixService.setupUnitMatrix(modelMatrix);
+		matrixService.setupUnitMatrix(modelMatrixTwo);
+		matrixService.setupUnitMatrix(modelMatrixThree);
+		matrixService.setupUnitMatrix(modelMatrixFour);
+		matrixService.setupUnitMatrix(modelMatrixFive);
+		matrixService.translate(modelMatrixTwo, 2, 2, 2);
+		matrixService.translate(modelMatrixThree, -2, 2, 2);
+		matrixService.translate(modelMatrixFour, 2, -2, 0);
+		matrixService.translate(modelMatrixFive, -2, -2, -3);
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -10);
@@ -135,6 +159,7 @@ public class WindowTextureTest implements GLEventListener {
 		matrixService.rotateAboutXAxis(modelMatrix, 2);
 		matrixService.rotateAboutYAxis(modelMatrix, 2);
 		program.setModelMatrix(gl4, modelMatrix, programId);
+		program.setTextureUnit(gl4, 0);
 		gl4.glActiveTexture(GL4.GL_TEXTURE0);
 		gl4.glBindTexture(GL4.GL_TEXTURE_2D, testTextureId);
 		
@@ -146,13 +171,41 @@ public class WindowTextureTest implements GLEventListener {
 		if(gl4.glGetError() != 0){
 			System.err.println("Error code: " + gl4.glGetError());
 			}
-		/*gl4.glEnable(GL4.GL_CULL_FACE);
+		gl4.glEnable(GL4.GL_CULL_FACE);
 		gl4.glCullFace(GL4.GL_BACK);
-	    gl4.glFrontFace(GL4.GL_CW);*/
+	    gl4.glFrontFace(GL4.GL_CW);
 	    
 	    gl4.glDrawArrays(GL4.GL_TRIANGLES, 0 , 18);
 	    
-	    //gl4.glDisable(GL4.GL_CULL_FACE);
+	    matrixService.rotateAboutYAxis(modelMatrixTwo, 2);
+	    program.setModelMatrix(gl4, modelMatrixTwo, programId);
+	    program.setTextureUnit(gl4, 1);
+	    gl4.glActiveTexture(GL4.GL_TEXTURE1);
+		gl4.glBindTexture(GL4.GL_TEXTURE_2D, testTextureTwoId);
+	    gl4.glDrawArrays(GL4.GL_TRIANGLES, 0 , 18);
+	    
+	    matrixService.rotateAboutYAxis(modelMatrixThree, 2);
+	    program.setModelMatrix(gl4, modelMatrixThree, programId);
+	    program.setTextureUnit(gl4, 2);
+	    gl4.glActiveTexture(GL4.GL_TEXTURE2);
+		gl4.glBindTexture(GL4.GL_TEXTURE_2D, testTextureThreeId);
+	    gl4.glDrawArrays(GL4.GL_TRIANGLES, 0 , 18);
+	    
+	    matrixService.rotateAboutYAxis(modelMatrixFour, 2);
+	    program.setModelMatrix(gl4, modelMatrixFour, programId);
+	    program.setTextureUnit(gl4, 0);
+	    gl4.glActiveTexture(GL4.GL_TEXTURE0);
+		gl4.glBindTexture(GL4.GL_TEXTURE_2D, testTextureId);
+	    gl4.glDrawArrays(GL4.GL_TRIANGLES, 0 , 18);
+	    
+	    matrixService.rotateAboutYAxis(modelMatrixFive, 2);
+	    program.setModelMatrix(gl4, modelMatrixFive, programId);
+	    program.setTextureUnit(gl4, 3);
+	    gl4.glActiveTexture(GL4.GL_TEXTURE3);
+		gl4.glBindTexture(GL4.GL_TEXTURE_2D, testTextureJPGId);
+	    gl4.glDrawArrays(GL4.GL_TRIANGLES, 0 , 18);
+	    
+	    gl4.glDisable(GL4.GL_CULL_FACE);
 		
 		gl4.glBindVertexArray(0);
 		gl4.glUseProgram(0);
