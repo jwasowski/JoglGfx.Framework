@@ -70,7 +70,6 @@ public class WindowModelImport implements GLEventListener {
 		
 		programId = program.initProgram(gl4);
 		program.setLight(gl4, light, programId);
-		program.setTextureUnit(gl4, 0);
 		
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
@@ -83,9 +82,8 @@ public class WindowModelImport implements GLEventListener {
 		//TODO Load Data and Material
 		//importedModel.vertexData = new double[] {1f};
 		importedModel.material = new Material();
-		String url = "/textures/ziemia.tga";
+		String url = "ziemia.tga";
 		importedModel.texture = textureLoader.LoadTexture(url);
-		importedModel.textureUnit = GL4.GL_TEXTURE0;
 		
 		importedModel.init(drawable);
 		

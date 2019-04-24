@@ -23,7 +23,6 @@ public class ImportedModel {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
 	public float[] modelMatrixOne = new float[16];
-	List<ModelPart> modelParts = new ArrayList<ModelPart>();
 	private ModelImporter modelImporter = new ModelImporter();
 	private MatrixService matrixService = new MatrixService();
 	private DoubleBuffer dbBuffer;
@@ -65,7 +64,7 @@ public class ImportedModel {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		gl4.glBindVertexArray(0);*/
 
-		modelImporter.loadModel("krajobraz.obj", modelParts);
+		modelImporter.loadModel("krajobraz.obj", gl4);
 		//modelParts.get(0).vertexData.forEach(doubleI -> System.out.println(Arrays.toString(doubleI)));
 	}
 
