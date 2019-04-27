@@ -29,7 +29,7 @@ public class WindowModelImport implements GLEventListener {
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
 	private int programId;
-	
+	private Material material;
 	
 	
 	public WindowModelImport(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
@@ -68,21 +68,30 @@ public class WindowModelImport implements GLEventListener {
 		light.setLinearAtt(0.005f);
 		light.setQuadraticAtt(0.0125f);
 		
+		material = new Material();
+		material.setAmbient(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+		material.setDiffuse(new float[] { 0.8f, 0.007409f, 0.014076f, 1.0f });
+		material.setSpecular(new float[] { 0.323789f, 0.323789f, 0.323789f, 1.0f });
+		material.setEmission(new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
+		material.setShininess(96.078431f);
+		
 		programId = program.initProgram(gl4);
 		program.setLight(gl4, light, programId);
 		
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -10);
+		matrixService.rotateAboutXAxis(viewMatrix, 30);
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		
 		importedModel.setProgram(program);
 		//TODO Load Data and Material
-		//importedModel.vertexData = new double[] {1f};
-		importedModel.material = new Material();
-		String url = "ziemia.tga";
+		
+		importedModel.material = material;
+		
+		String url = "TerrainTexture.png";
 		importedModel.texture = textureLoader.LoadTexture(url);
 		
 		importedModel.init(drawable);
