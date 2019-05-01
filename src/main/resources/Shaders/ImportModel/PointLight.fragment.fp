@@ -15,7 +15,7 @@ uniform struct PointLight{
     vec4 diffuse;
     vec4 specular;
     vec3 attenuation;
-}light;
+} light;
 
 
 uniform struct Material{
@@ -24,7 +24,7 @@ uniform struct Material{
   vec4  specular;
   vec4  emission;
   float shininess;
-}material;
+} material;
 
 uniform sampler2D texture_unit;
 

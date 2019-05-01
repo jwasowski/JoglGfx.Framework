@@ -1,0 +1,46 @@
+# Blender MTL File: 'latarnia.blend'
+# Material Count: 4
+
+newmtl Brick
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.226883 0.103013
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Bump -s 8.000000 8.000000 8.000000 D:\\Informatyka\\Grafika\\Prace\\ES_ModenaBrick_Cassis_prof.jpg
+map_Kd -s 8.000000 8.000000 8.000000 D:\\Informatyka\\Grafika\\Prace\\ES_ModenaBrick_Cassis_prof.jpg
+
+newmtl Concrete
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.129171 0.129171 0.129171
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+newmtl Roof
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Bump -s 28.000000 28.000000 28.000000 D:\\Informatyka\\Grafika\\Prace\\RoofTile.png
+map_Kd -s 28.000000 28.000000 28.000000 D:\\Informatyka\\Grafika\\Prace\\RoofTile.png
+
+newmtl Steel
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.007409 0.014076
+Ks 0.323789 0.323789 0.323789
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
