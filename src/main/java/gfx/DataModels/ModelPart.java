@@ -12,6 +12,9 @@ public class ModelPart {
 	public List<Integer> textIndicesData = new ArrayList<>();
 	public List<Integer> normIndicesData = new ArrayList<>();
 	public List<VTN> vtnList = new  ArrayList<>();
+	public final int[] vertexArrayObject = new int[1];
+	public final int[] vertexBufferObject = new int[1];
+	//TODO Make materiaLineData a simple String
 	public List<MaterialName> materialLineData = new ArrayList<>();
 	public int facesCounter;
 
