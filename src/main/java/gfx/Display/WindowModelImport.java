@@ -59,7 +59,7 @@ public class WindowModelImport implements GLEventListener {
 		System.out.println("GL_RENDERER: " + gl4.glGetString(GL4.GL_RENDERER));
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		// Light SETUP
-		plocation = new Point3D(0.0f, 1.5f, 2.0f, 1.0f);
+		plocation = new Point3D(0.0f, 3f, 2.0f, 1.0f);
 		light.setPosition(plocation);
 		light.setAmbient(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
 		light.setDiffuse(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });

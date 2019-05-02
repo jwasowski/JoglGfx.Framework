@@ -32,14 +32,10 @@ public class ImportedModel {
 	private ModelImporter modelImporter = new ModelImporter();
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
-	private FloatBuffer vertexBuffer;
-	private FloatBuffer textureBuffer;
-	private FloatBuffer normalBuffer;
-	private IntBuffer vertIndicesBuffer;
 	
 	//TODO create constructor with model name param pointing at file
+	//public Model model = new Model("WomanAnimTest2.obj");
 	public Model model = new Model("krajobrazN.obj");
-	public int modelNumber = 1;
 	
 	private ShaderProgramImportModel program;
 	public Texture texture;
@@ -60,8 +56,7 @@ public class ImportedModel {
 		String url = "SeaTexture.png";
 		texture = textureLoader.LoadTexture(url);
 		textureId = texture.getTextureObject();
-		// Voa Setup
-		// Vbo vertices Setup
+		// Voa and Vbo Setups are in Model class
 		int vtnArraySize = 0;
 		for(ModelPart mp : model.modelParts) {
 			vtnArraySize = vtnArraySize + mp.vertIndicesData.size();
@@ -80,9 +75,6 @@ public class ImportedModel {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
-			deallocator.deallocate(vertexBuffer);
-			deallocator.deallocate(textureBuffer);
-			deallocator.deallocate(normalBuffer);
 			//deallocator.deallocate(vertIndicesBuffer);
 			//TODO Deallocate buffers in each ModelPart
 			
@@ -92,6 +84,7 @@ public class ImportedModel {
 		}
 		gl4.glBindVertexArray(0);
 		gl4.glDeleteVertexArrays(1, vertexArrayObject, 0);
+		//TODO Delete VAOs from ModelParts
 		if (program.getProgramId() != 0) {
 			program.disposeProgram(gl4);
 		}

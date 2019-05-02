@@ -5,6 +5,8 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.FPSAnimator;
 
+import gfx.Display.WindowBezier;
+import gfx.Display.WindowBezierPatch;
 import gfx.Display.WindowModelImport;
 import gfx.Display.Tests.WindowTextureTest;
 

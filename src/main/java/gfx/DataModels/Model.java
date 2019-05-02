@@ -30,6 +30,8 @@ public class Model {
 	public void generateVertexTextureNormal(ModelPart modelParts, GL4 gl4) {
 		if (modelParts.vertIndicesData.size() == modelParts.textIndicesData.size()
 				&& modelParts.vertIndicesData.size() == modelParts.normIndicesData.size()) {
+			long startTime = System.currentTimeMillis();
+			long elapsedTime = 0L;
 			for (int i = 0; i < modelParts.vertIndicesData.size(); i++) {
 				modelParts.vtnList.add(new VTN(verticesData.get(modelParts.vertIndicesData.get(i)),
 						texturesData.get(modelParts.textIndicesData.get(i)),
@@ -46,17 +48,17 @@ public class Model {
 			gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, modelParts.vertexBufferObject[0]);
 			
 			List<Float> vtnDataCombined = new ArrayList<>();
-			//TODO Change syntax to (object : object list)
-			for(int i=0; i<modelParts.vtnList.size();i++) {
-				vtnDataCombined.add(modelParts.vtnList.get(i).vertex.position[0]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).vertex.position[1]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).vertex.position[2]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).vertex.position[3]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).textureUV.textureCoordinates[0]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).textureUV.textureCoordinates[1]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).normal.normal[0]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).normal.normal[1]);
-				vtnDataCombined.add(modelParts.vtnList.get(i).normal.normal[2]);
+			
+			for(VTN vtn : modelParts.vtnList) {
+				vtnDataCombined.add(vtn.vertex.position[0]);
+				vtnDataCombined.add(vtn.vertex.position[1]);
+				vtnDataCombined.add(vtn.vertex.position[2]);
+				vtnDataCombined.add(vtn.vertex.position[3]);
+				vtnDataCombined.add(vtn.textureUV.textureCoordinates[0]);
+				vtnDataCombined.add(vtn.textureUV.textureCoordinates[1]);
+				vtnDataCombined.add(vtn.normal.normal[0]);
+				vtnDataCombined.add(vtn.normal.normal[1]);
+				vtnDataCombined.add(vtn.normal.normal[2]);
 				
 			}
 			float[] vtnDataRaw = ArrayUtils.toPrimitive(vtnDataCombined.toArray(new Float[0]), 0.0F);
@@ -71,8 +73,10 @@ public class Model {
 			gl4.glVertexAttribPointer(3, 3, GL4.GL_FLOAT, false, stride, normalOffset);
 						
 			gl4.glBindVertexArray(0);
-			
+			elapsedTime = System.currentTimeMillis() - startTime;
+			System.out.println("Generation completed in: " + elapsedTime + " ms");
 			System.out.println("Generated list size: "+modelParts.vtnList.size()+" Generated list faces: "+modelParts.vtnList.size()/3);
+			
 		}
 	}
 }
