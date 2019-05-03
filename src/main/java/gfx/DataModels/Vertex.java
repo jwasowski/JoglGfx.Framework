@@ -1,5 +1,5 @@
 package gfx.DataModels;
-
+/** Object storing vertex data as float array of x, y, z coordinates and w. */
 public class Vertex {
 
 	public float[] position = new float[4];

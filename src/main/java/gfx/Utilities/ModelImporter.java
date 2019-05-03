@@ -2,6 +2,7 @@ package gfx.Utilities;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,16 +12,18 @@ import java.util.List;
 
 import com.jogamp.opengl.GL4;
 
-import gfx.DataModels.MaterialName;
 import gfx.DataModels.Model;
+import gfx.DataModels.ModelMaterialLibrary;
 import gfx.DataModels.ModelPart;
 import gfx.DataModels.Normal;
 import gfx.DataModels.TextureUV;
+import gfx.DataModels.TexturedMaterial;
 import gfx.DataModels.Vertex;
+import graphicslib3D.Material;
 import graphicslib3D.Vertex3D;
 
 public class ModelImporter {
- 
+
 	public void loadModel(Model model, GL4 gl4) {
 		// TODO Implement and test
 		try {
@@ -42,7 +45,7 @@ public class ModelImporter {
 						arrayHelper = line.split("\\s");
 						model.normalsData.add(new Normal(Float.parseFloat(arrayHelper[1]),
 								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3])));
-						
+
 						normalsCounter++;
 						fileLineCounter++;
 
@@ -50,7 +53,7 @@ public class ModelImporter {
 						arrayHelper = line.split("\\s");
 						model.texturesData
 								.add(new TextureUV(Float.parseFloat(arrayHelper[1]), Float.parseFloat(arrayHelper[2])));
-						
+
 						texturesCounter++;
 						fileLineCounter++;
 
@@ -60,11 +63,11 @@ public class ModelImporter {
 							String v = s.split("/")[0];
 							String vt = s.split("/")[1];
 							String vn = s.split("/")[2];
-							
+
 							model.modelParts.get(currentPart).vertIndicesData.add(Integer.parseInt(v) - indexOne);
 							model.modelParts.get(currentPart).textIndicesData.add(Integer.parseInt(vt) - indexOne);
 							model.modelParts.get(currentPart).normIndicesData.add(Integer.parseInt(vn) - indexOne);
-			
+
 						}
 						fileLineCounter++;
 						facesCounter++;
@@ -73,7 +76,7 @@ public class ModelImporter {
 						arrayHelper = line.split("\\s");
 						model.verticesData.add(new Vertex(Float.parseFloat(arrayHelper[1]),
 								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), one));
-						
+
 						verticesCounter++;
 						fileLineCounter++;
 
@@ -93,7 +96,7 @@ public class ModelImporter {
 						fileLineCounter++;
 
 					} else if (line.startsWith("o")) {
-						
+
 						objectsCounter++;
 						fileLineCounter++;
 					} else if (line.startsWith("mtllib")) {
@@ -111,18 +114,30 @@ public class ModelImporter {
 					+ normalsCounter + " Textures: " + texturesCounter + " File lines: " + fileLineCounter);
 			System.out.println("Vertices List size: " + model.verticesData.size() + " Normals List size: "
 					+ model.normalsData.size() + " Textures List size: " + model.texturesData.size());
-			System.out.println("Model Part 1 faces: " + model.modelParts.get(0).facesCounter + " ,Model Part 2 faces: "
-					+ model.modelParts.get(1).facesCounter + " ,Model Part 3 faces: "
-					+ model.modelParts.get(2).facesCounter /*+ " ,Model Part 4 faces: "
-					+ model.modelParts.get(3).facesCounter + " ,Model Part 5 faces: "
-					+ model.modelParts.get(4).facesCounter + " ,Model Part 6 faces: "
-					+ model.modelParts.get(5).facesCounter)*/);
-			System.out.println("Model Part 1 indices size: " + model.modelParts.get(0).vertIndicesData.size()
-					+ " ,Model Part 2 indices size: " + model.modelParts.get(1).vertIndicesData.size()
-					+ " ,Model Part 3 indices size: " + model.modelParts.get(2).vertIndicesData.size()
-					/*+ " ,Model Part 4 indices size: " + model.modelParts.get(3).vertIndicesData.size()
-					+ " ,Model Part 5 indices size: " + model.modelParts.get(4).vertIndicesData.size()
-					+ " ,Model Part 6 indices size: " + model.modelParts.get(5).vertIndicesData.size())*/);
+			/*
+			 * System.out.println("Model Part 1 faces: " +
+			 * model.modelParts.get(0).facesCounter + " ,Model Part 2 faces: " +
+			 * model.modelParts.get(1).facesCounter + " ,Model Part 3 faces: " +
+			 * model.modelParts.get( 2).facesCounter + " ,Model Part 4 faces: " +
+			 * model.modelParts.get(3).facesCounter + " ,Model Part 5 faces: " +
+			 * model.modelParts.get(4).facesCounter + " ,Model Part 6 faces: " +
+			 * model.modelParts.get(5).facesCounter) );
+			 */
+			/*
+			 * System.out.println("Model Part 1 indices size: " +
+			 * model.modelParts.get(0).vertIndicesData.size() +
+			 * " ,Model Part 2 indices size: " +
+			 * model.modelParts.get(1).vertIndicesData.size() +
+			 * " ,Model Part 3 indices size: " +
+			 * model.modelParts.get(2).vertIndicesData.size()
+			 * 
+			 * + " ,Model Part 4 indices size: " +
+			 * model.modelParts.get(3).vertIndicesData.size() +
+			 * " ,Model Part 5 indices size: " +
+			 * model.modelParts.get(4).vertIndicesData.size() +
+			 * " ,Model Part 6 indices size: " +
+			 * model.modelParts.get(5).vertIndicesData.size()) );
+			 */
 			System.out.println("Model Part 1 contains indice 1: "
 					+ model.modelParts.get(0).vertIndicesData.contains(new Integer(1))
 					+ " ,Model Part 2 contains indice 1: "
@@ -139,16 +154,75 @@ public class ModelImporter {
 				}
 				System.out.println("Model part " + i + " values: " + builder.toString());
 			}
-			System.out.println("Import completed in: " + elapsedTime + " ms");
+			System.out.println("Model data import completed in: " + elapsedTime + " ms");
 
 			buffer.close();
 
 		} catch (URISyntaxException | IOException e) {
-			
+			System.out.println("File not found or IO error!");
 			e.printStackTrace();
 		}
 
 	}
 
-	
+	public void loadMaterials(ModelMaterialLibrary lib, String libName) {
+		File file;
+		try {
+			file = Paths.get(this.getClass().getResource("/Materials/" + libName).toURI()).toFile();
+			FileReader fr = new FileReader(file);
+			BufferedReader buffer = new BufferedReader(fr);
+			String line = "start";
+			String[] arrayHelper;
+			int currentMaterial = -1;
+			long startTime = System.currentTimeMillis();
+			long elapsedTime = 0L;
+
+			while (line != null) {
+				line = buffer.readLine();
+				if (line != null) {
+					if (line.startsWith("newmtl")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.add(new TexturedMaterial(arrayHelper[1]));
+						currentMaterial++;
+					} else if (line.startsWith("Ns")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.get(currentMaterial).setShininess(Float.parseFloat(arrayHelper[1]));
+
+					} else if (line.startsWith("Ka")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.get(currentMaterial).setAmbient(new float[] { Float.parseFloat(arrayHelper[1]),
+								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), 1.0f });
+
+					} else if (line.startsWith("Kd")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.get(currentMaterial).setDiffuse(new float[] { Float.parseFloat(arrayHelper[1]),
+								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), 1.0f });
+
+					} else if (line.startsWith("Ks")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.get(currentMaterial).setSpecular(new float[] { Float.parseFloat(arrayHelper[1]),
+								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), 1.0f });
+
+					} else if (line.startsWith("Ke")) {
+						arrayHelper = line.split("\\s");
+						lib.materials.get(currentMaterial).setEmission(new float[] { Float.parseFloat(arrayHelper[1]),
+								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), 1.0f });
+					} else if (line.startsWith("map_Kd")) {
+						arrayHelper = line.split("\\s");
+						arrayHelper = arrayHelper[arrayHelper.length-1].split("\\"+"\\");
+						lib.materials.get(currentMaterial).textureName = arrayHelper[arrayHelper.length-1]; //textureName
+						//TODO textureDiffuse
+					}
+				}
+			}
+			elapsedTime = System.currentTimeMillis() - startTime;
+			System.out.println("Number of materials: " + currentMaterial);
+			System.out.println("MaterialLib import completed in: " + elapsedTime + " ms");
+		} catch (URISyntaxException | IOException e) {
+			System.out.println("File not found or IO error!");
+			e.printStackTrace();
+		}
+
+	}
+
 }

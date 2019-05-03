@@ -1,5 +1,5 @@
 package gfx.DataModels;
-
+/** Object storing texture data as float array of x and y coordinates. */
 public class TextureUV {
 
 	public float[] textureCoordinates = new float[2];

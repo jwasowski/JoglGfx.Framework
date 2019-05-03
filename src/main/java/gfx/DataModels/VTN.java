@@ -1,5 +1,5 @@
 package gfx.DataModels;
-
+/** Object storing combined data of vertex, texture and normal. */
 public class VTN {
 
 	public Vertex vertex;

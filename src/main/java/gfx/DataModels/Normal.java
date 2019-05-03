@@ -1,5 +1,5 @@
 package gfx.DataModels;
-
+/** Object storing normal data as float array of x, y, z coordinates. */
 public class Normal {
 
 	public float[] normal = new float[3];

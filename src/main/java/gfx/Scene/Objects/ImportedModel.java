@@ -15,8 +15,10 @@ import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.texture.Texture;
 
 import gfx.DataModels.Model;
+import gfx.DataModels.ModelMaterialLibrary;
 import gfx.DataModels.ModelPart;
 import gfx.Utilities.DeallocationHelper;
+import gfx.Utilities.DeallocationHelper.Deallocator;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.ModelImporter;
 import gfx.Utilities.TextureLoader;
@@ -32,10 +34,11 @@ public class ImportedModel {
 	private ModelImporter modelImporter = new ModelImporter();
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
-	
+	private DeallocationHelper deallocator = new DeallocationHelper();
 	//TODO create constructor with model name param pointing at file
 	//public Model model = new Model("WomanAnimTest2.obj");
 	public Model model = new Model("krajobrazN.obj");
+	public ModelMaterialLibrary materialLib = new ModelMaterialLibrary();
 	
 	private ShaderProgramImportModel program;
 	public Texture texture;
@@ -51,6 +54,7 @@ public class ImportedModel {
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		modelImporter.loadModel(model, gl4);
+		modelImporter.loadMaterials(materialLib,model.materialLibName);
 		matrixService.setupUnitMatrix(modelMatrixOne);
 		matrixService.setupUnitMatrix(normalMatrixOne);
 		String url = "SeaTexture.png";
@@ -61,8 +65,9 @@ public class ImportedModel {
 		for(ModelPart mp : model.modelParts) {
 			vtnArraySize = vtnArraySize + mp.vertIndicesData.size();
 			model.generateVertexTextureNormal(mp,gl4);
+			deallocator.deallocate(model.vtnBuffer);
 		}
-						
+		program.setMaterial(gl4, material, program.getProgramId());			
 		gl4.glBindVertexArray(0);
 		
 		
@@ -70,7 +75,6 @@ public class ImportedModel {
 
 	public void dispose(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		DeallocationHelper deallocator = new DeallocationHelper();
 		gl4.glDisableVertexAttribArray(0);
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
@@ -97,7 +101,7 @@ public class ImportedModel {
 		matrixService.rotateAboutYAxis(modelMatrixOne, 0.5f);
 		matrixService.rotateAboutYAxis(normalMatrixOne, 0.5f);
 		program.setModelMatrix(gl4, modelMatrixOne, program.getProgramId());
-		program.setMaterial(gl4, material, program.getProgramId());
+		
 		program.setNormalMatrix(gl4, normalMatrixOne, program.getProgramId());
 		gl4.glEnable(GL4.GL_CULL_FACE);
 		gl4.glCullFace(GL4.GL_BACK);
@@ -108,6 +112,7 @@ public class ImportedModel {
 		
 		for(int i=0;i<model.modelParts.size();i++) {
 			gl4.glBindVertexArray(model.modelParts.get(i).vertexArrayObject[0]);
+			program.setMaterial(gl4, materialLib.findMaterial(model.modelParts.get(i).materialName), program.getProgramId());	
 			gl4.glDrawArrays(GL4.GL_TRIANGLES, 0, model.modelParts.get(i).vtnList.size());
 			gl4.glBindVertexArray(0);
 		}

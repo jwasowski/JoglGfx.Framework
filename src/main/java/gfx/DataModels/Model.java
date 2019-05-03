@@ -20,7 +20,7 @@ public class Model {
 	public List<ModelPart> modelParts = new ArrayList<>();
 	public String materialLibName;
 	public String modelName;
-	private FloatBuffer vtnBuffer;
+	public FloatBuffer vtnBuffer;
 
 	public Model(String modelName) {
 		this.modelName = modelName;
