@@ -94,7 +94,7 @@ public class Bezier {
 		gl4.glViewport(x, y, width, height);
 	}
 
-	// TODO If mouse event fired, call addPoint in Display method of Bezier
+	
 	public boolean addPoint(GL4 gl4, float x, float y) {
 		System.out.println("Addpoint - numPoints: " + numPoints);
 		if (numPoints == maxPoints) {

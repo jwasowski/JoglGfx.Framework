@@ -26,7 +26,6 @@ public class Model {
 		this.modelName = modelName;
 	}
 
-	// TODO Verify and test method
 	public void generateVertexTextureNormal(ModelPart modelParts, GL4 gl4) {
 		if (modelParts.vertIndicesData.size() == modelParts.textIndicesData.size()
 				&& modelParts.vertIndicesData.size() == modelParts.normIndicesData.size()) {

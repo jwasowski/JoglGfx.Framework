@@ -26,7 +26,6 @@ import graphicslib3D.Vertex3D;
 public class ModelImporter {
 	/** Load model data from file including markers like: v, vt, vn, f, usemtl, mtlib. */
 	public void loadModel(Model model, GL4 gl4) {
-		// TODO Implement and test
 		try {
 			File file = Paths.get(this.getClass().getResource("/Models/" + model.modelName).toURI()).toFile();
 			FileReader fr = new FileReader(file);

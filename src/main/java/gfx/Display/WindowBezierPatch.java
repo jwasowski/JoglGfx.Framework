@@ -38,7 +38,7 @@ public class WindowBezierPatch implements GLEventListener {
 	private float[] projectionMatrix = new float[16];
 	public float[] viewMatrix = new float[16];
 	private int width, height;
-	// TODO Check data input format
+	
 	private float[] bezierPatchOneData = { -3f, 1f, 0f, 1f, -2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f,
 			2.0f / 3.0f, 1.0f / 3.0f, 4.0f / 3.0f, 1.0f / 3.0f, 2, 1, 0, 1, -1.5f, 0.5f, 0, 1, -0.5f, 1.0f / 6.0f, 1,
 			1.0f / 3.0f, 0.5f, 1.0f / 6.0f, 1, 1.0f / 3.0f, 1.5f, 0.5f, 0, 1, -3, 0, 0, 1, -1, 0, 2, 1.0f / 3.0f, 1, 0,

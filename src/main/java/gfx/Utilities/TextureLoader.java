@@ -18,7 +18,7 @@ public class TextureLoader {
 		IntBuffer intBuffer = GLBuffers.newDirectIntBuffer(1);
 		gl4.glGenTextures(1, intBuffer);
 		gl4.glBindTexture(GL4.GL_TEXTURE_2D, intBuffer.get(0));
-		//TODO Load texture to GPU
+		
 		
 		// parametry interpolacji tekstury
 	    gl4.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);

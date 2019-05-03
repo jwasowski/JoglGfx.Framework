@@ -111,8 +111,6 @@ public class WindowTextureTest implements GLEventListener {
  		
  		fbVertices = Buffers.newDirectFloatBuffer(vertexData);
  		textureCoords = Buffers.newDirectFloatBuffer(textureData);
- 		// TODO Read more on interleaved data buffers and pointers, everything
- 		// seems ok
  		final long verticesBufferSizeInBytes = vertexData.length * Buffers.SIZEOF_FLOAT;
  		final long textureCoordsBufferSizeInBytes = textureData.length * Buffers.SIZEOF_FLOAT;
  		// Stride defines how many bytes there are in one set of vertex position
@@ -142,7 +140,7 @@ public class WindowTextureTest implements GLEventListener {
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

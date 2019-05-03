@@ -42,7 +42,7 @@ public class ShaderProgramImportModel {
 		program.add(fragmentShader);
 		program.link(gl4, System.out);
 		program.validateProgram(gl4, System.err);
-		System.out.println("Superprogram: " + program.id());
+		System.out.println("ImportModelProgram: " + program.id());
 		modelMatrixLocation = getUniformLocation("model_matrix", gl4);
 		viewMatrixLocation = getUniformLocation("view_matrix", gl4);
 		projectionMatrixLocation = getUniformLocation("projection_matrix", gl4);
