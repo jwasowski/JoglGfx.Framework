@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.util.texture.Texture;
 
 import gfx.DataModels.Model;
 import gfx.DataModels.ModelMaterialLibrary;
@@ -23,7 +24,7 @@ import graphicslib3D.Material;
 import graphicslib3D.Vertex3D;
 
 public class ModelImporter {
-
+	/** Load model data from file including markers like: v, vt, vn, f, usemtl, mtlib. */
 	public void loadModel(Model model, GL4 gl4) {
 		// TODO Implement and test
 		try {
@@ -114,30 +115,6 @@ public class ModelImporter {
 					+ normalsCounter + " Textures: " + texturesCounter + " File lines: " + fileLineCounter);
 			System.out.println("Vertices List size: " + model.verticesData.size() + " Normals List size: "
 					+ model.normalsData.size() + " Textures List size: " + model.texturesData.size());
-			/*
-			 * System.out.println("Model Part 1 faces: " +
-			 * model.modelParts.get(0).facesCounter + " ,Model Part 2 faces: " +
-			 * model.modelParts.get(1).facesCounter + " ,Model Part 3 faces: " +
-			 * model.modelParts.get( 2).facesCounter + " ,Model Part 4 faces: " +
-			 * model.modelParts.get(3).facesCounter + " ,Model Part 5 faces: " +
-			 * model.modelParts.get(4).facesCounter + " ,Model Part 6 faces: " +
-			 * model.modelParts.get(5).facesCounter) );
-			 */
-			/*
-			 * System.out.println("Model Part 1 indices size: " +
-			 * model.modelParts.get(0).vertIndicesData.size() +
-			 * " ,Model Part 2 indices size: " +
-			 * model.modelParts.get(1).vertIndicesData.size() +
-			 * " ,Model Part 3 indices size: " +
-			 * model.modelParts.get(2).vertIndicesData.size()
-			 * 
-			 * + " ,Model Part 4 indices size: " +
-			 * model.modelParts.get(3).vertIndicesData.size() +
-			 * " ,Model Part 5 indices size: " +
-			 * model.modelParts.get(4).vertIndicesData.size() +
-			 * " ,Model Part 6 indices size: " +
-			 * model.modelParts.get(5).vertIndicesData.size()) );
-			 */
 			System.out.println("Model Part 1 contains indice 1: "
 					+ model.modelParts.get(0).vertIndicesData.contains(new Integer(1))
 					+ " ,Model Part 2 contains indice 1: "
@@ -164,7 +141,7 @@ public class ModelImporter {
 		}
 
 	}
-
+	/** Load materials from file including: shininess, ambient, diffuse, specular and texture name data.*/
 	public void loadMaterials(ModelMaterialLibrary lib, String libName) {
 		File file;
 		try {
@@ -209,12 +186,14 @@ public class ModelImporter {
 								Float.parseFloat(arrayHelper[2]), Float.parseFloat(arrayHelper[3]), 1.0f });
 					} else if (line.startsWith("map_Kd")) {
 						arrayHelper = line.split("\\s");
-						arrayHelper = arrayHelper[arrayHelper.length-1].split("\\"+"\\");
-						lib.materials.get(currentMaterial).textureName = arrayHelper[arrayHelper.length-1]; //textureName
-						//TODO textureDiffuse
+						arrayHelper = arrayHelper[arrayHelper.length - 1].split("\\" + "\\");
+						lib.materials.get(currentMaterial).textureName = arrayHelper[arrayHelper.length - 1]; // textureName
+						System.out.println("Texture name "+currentMaterial+" : "+lib.materials.get(currentMaterial).textureName);
+						// TODO textureDiffuse
 					}
 				}
 			}
+			buffer.close();
 			elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Number of materials: " + currentMaterial);
 			System.out.println("MaterialLib import completed in: " + elapsedTime + " ms");
@@ -223,6 +202,14 @@ public class ModelImporter {
 			e.printStackTrace();
 		}
 
+	}
+	/** For future use */
+	public void loadTextures(TextureLoader textureLoader, ModelPart modelPart, ModelMaterialLibrary materialsLib) {
+		String textureName = materialsLib.findTextureName(modelPart.materialName);
+		if(!textureName.equals("") && !textureName.equals(".")) {
+		Texture texture = textureLoader.LoadTexture(textureName);
+		modelPart.textureId = texture.getTextureObject();
+		}
 	}
 
 }

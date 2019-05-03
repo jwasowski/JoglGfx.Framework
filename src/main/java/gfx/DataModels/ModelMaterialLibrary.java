@@ -18,4 +18,13 @@ public class ModelMaterialLibrary {
 		}
 		return new Material();
 	}
+
+	public String findTextureName(String materialName) {
+		for (TexturedMaterial tMaterial : materials) {
+			if (tMaterial.materialName.equals(materialName)) {
+				return tMaterial.textureName;
+			}
+		}
+		return new String("");
+	}
 }

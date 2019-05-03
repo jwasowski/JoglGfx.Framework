@@ -15,6 +15,7 @@ public class ModelPart {
 	public final int[] vertexArrayObject = new int[1];
 	public final int[] vertexBufferObject = new int[1];
 	public String materialName;
+	public int textureId;
 	public int facesCounter;
 
 	public ModelPart(String partName) {

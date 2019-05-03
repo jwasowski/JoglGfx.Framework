@@ -3,6 +3,7 @@ package gfx.Display;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.DebugGL4;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -11,6 +12,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import gfx.Scene.Objects.ImportedModel;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.TextureLoader;
+import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
@@ -24,8 +26,10 @@ public class WindowModelImport implements GLEventListener {
 	private ImportedModel importedModel = new ImportedModel();
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
+	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
 	
-	private Point3D plocation;
+	private float[] pLocationRaw = new float[16];
+	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
 	private int programId;
@@ -45,7 +49,7 @@ public class WindowModelImport implements GLEventListener {
 		});
 		window.addGLEventListener(this);
 		// window.addMouseListener(this);
-		// window.addKeyListener(this);
+		window.addKeyListener(keyboardController);
 		window.setSize(width, height);
 		window.setTitle(name);
 		window.setVisible(true);
@@ -58,9 +62,12 @@ public class WindowModelImport implements GLEventListener {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		System.out.println("GL_RENDERER: " + gl4.glGetString(GL4.GL_RENDERER));
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
+		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
-		plocation = new Point3D(0.0f, 6f, 2.0f, 1.0f);
-		light.setPosition(plocation);
+		matrixService.setupUnitMatrix(pLocationRaw);
+		matrixService.translate(pLocationRaw, 0.0f, 20f, 0.0f);
+		pLocation = new Point3D(pLocationRaw[0],pLocationRaw[5],pLocationRaw[10],pLocationRaw[15]);
+		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
 		light.setDiffuse(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setSpecular(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
@@ -80,14 +87,15 @@ public class WindowModelImport implements GLEventListener {
 		
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
-		matrixService.translate(viewMatrix, 0, 0, -12);
+		matrixService.translate(viewMatrix, 0, 0, -13);
 		matrixService.rotateAboutXAxis(viewMatrix, 30);
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		
+		importedModel.viewMatrix = viewMatrix;
 		importedModel.setProgram(program);
-		//TODO Load Data and Material
+		
 		
 		importedModel.material = material;
 		
@@ -109,9 +117,18 @@ public class WindowModelImport implements GLEventListener {
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		keyboardController.controlKeyboard();
+		/*matrixService.rotateAboutYAxis(pLocationRaw, 0.15f);
+		pLocation.setX(pLocationRaw[0]);
+		pLocation.setY(pLocationRaw[5]);
+		pLocation.setZ(pLocationRaw[10]);
+		light.setPosition(new Point3D(pLocationRaw));
+		program.setLight(gl4, light, programId);*/
+		importedModel.viewMatrix = viewMatrix;
 		importedModel.display(drawable);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
+		
 	}
 
 	@Override
@@ -123,7 +140,7 @@ public class WindowModelImport implements GLEventListener {
 
 	}
 
-	private void shutDown() {
+	public void shutDown() {
 		// Use a dedicate thread to run the stop() to ensure that the
 		// animator stops before program exits.
 		new Thread() {
@@ -135,4 +152,6 @@ public class WindowModelImport implements GLEventListener {
 			}
 		}.start();
 	}
+	
+	
 }

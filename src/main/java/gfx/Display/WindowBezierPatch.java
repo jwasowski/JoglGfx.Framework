@@ -27,8 +27,8 @@ public class WindowBezierPatch implements GLEventListener {
 	private BezierPatch bezierPatchFloor = new BezierPatch();
 	private ShaderProgramBezierPatch program = new ShaderProgramBezierPatch();
 	private MatrixService matrixService = new MatrixService();
-	KeyboardController keyboardController = new KeyboardController(bezierPatchOne, bezierPatchTwo, bezierPatchFloor,
-			this);
+	/*KeyboardController keyboardController = new KeyboardController(bezierPatchOne, bezierPatchTwo, bezierPatchFloor,
+			this);*/
 	MouseController mouseController = new MouseController(this);
 	private int programId;
 	Material material = new Material();
@@ -69,7 +69,7 @@ public class WindowBezierPatch implements GLEventListener {
 		});
 		window.addGLEventListener(this);
 		//window.addMouseListener(mouseController);
-		window.addKeyListener(keyboardController);
+		//window.addKeyListener(keyboardController);
 		window.setSize(width, height);
 		window.setTitle(name);
 		window.setVisible(true);
@@ -142,7 +142,7 @@ public class WindowBezierPatch implements GLEventListener {
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
-		keyboardController.controlKeyboard();
+		//keyboardController.controlKeyboard();
 		lookAt();
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);

@@ -8,23 +8,20 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
 import gfx.Display.WindowBezierPatch;
+import gfx.Display.WindowModelImport;
 import gfx.Scene.Objects.BezierPatch;
+import gfx.Scene.Objects.GfxObjectInterface;
 
 public class KeyboardController implements KeyListener {
 
 	// TODO Create interfaces for Objects and make controller universal across
 	// all Object classes
 	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
-	private BezierPatch bezierPatchOne;
-	private BezierPatch bezierPatchTwo;
-	private BezierPatch bezierPatchFloor;
-	WindowBezierPatch display;
+	private GfxObjectInterface gfxObjectInterface;
+	private WindowModelImport display;
 
-	public KeyboardController(BezierPatch bezierPatchOne, BezierPatch bezierPatchTwo, BezierPatch bezierPatchFloor,
-			WindowBezierPatch display) {
-		this.bezierPatchOne = bezierPatchOne;
-		this.bezierPatchTwo = bezierPatchTwo;
-		this.bezierPatchFloor = bezierPatchFloor;
+	public KeyboardController(GfxObjectInterface gfxObjectInterface, WindowModelImport display) {
+		this.gfxObjectInterface = gfxObjectInterface;
 		this.display = display;
 	}
 
@@ -43,32 +40,56 @@ public class KeyboardController implements KeyListener {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
 					rotateXDown();
 				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_W) {
+					moveForward();
+				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
+					moveBackwards();
+				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_A) {
+					moveLeft();
+				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_D) {
+					moveRight();
+				}
 			});
 		}
 	}
 
 	public void rotateYLeft() {
-		bezierPatchOne.rotateYAxisLeft();
-		bezierPatchTwo.rotateYAxisLeft();
-		bezierPatchFloor.rotateYAxisLeft();
+		gfxObjectInterface.rotateYAxisLeft();
+
 	}
 
 	public void rotateYRight() {
-		bezierPatchOne.rotateYAxisRight();
-		bezierPatchTwo.rotateYAxisRight();
-		bezierPatchFloor.rotateYAxisRight();
+		gfxObjectInterface.rotateYAxisRight();
+
 	}
 
 	public void rotateXUp() {
-		bezierPatchOne.rotateXAxisUp();
-		bezierPatchTwo.rotateXAxisUp();
-		bezierPatchFloor.rotateXAxisUp();
+		gfxObjectInterface.rotateXAxisUp();
+
 	}
 
 	public void rotateXDown() {
-		bezierPatchOne.rotateXAxisDown();
-		bezierPatchTwo.rotateXAxisDown();
-		bezierPatchFloor.rotateXAxisDown();
+		gfxObjectInterface.rotateXAxisDown();
+
+	}
+
+	public void moveForward() {
+		gfxObjectInterface.moveForward();
+	}
+
+	public void moveBackwards() {
+		gfxObjectInterface.moveBackwards();
+	}
+
+	public void moveLeft() {
+		gfxObjectInterface.moveLeft();
+	}
+
+	public void moveRight() {
+		gfxObjectInterface.moveRight();
 	}
 
 	@Override
@@ -79,7 +100,7 @@ public class KeyboardController implements KeyListener {
 		}
 		// Rotate around Y axis
 		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			System.out.println(e.isAutoRepeat());
+			
 
 			keySet.add(e);
 
@@ -98,6 +119,30 @@ public class KeyboardController implements KeyListener {
 		}
 		// Rotate around X axis
 		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		// Move forward
+		if (e.getKeyCode() == KeyEvent.VK_W && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		// Move backwards
+		if (e.getKeyCode() == KeyEvent.VK_S && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		// Move left
+		if (e.getKeyCode() == KeyEvent.VK_A && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		// Move right
+		if (e.getKeyCode() == KeyEvent.VK_D && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 
 			keySet.add(e);
 
@@ -114,7 +159,7 @@ public class KeyboardController implements KeyListener {
 				}
 			}
 
-			System.out.println("Released");
+			
 
 		}
 
@@ -125,7 +170,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			System.out.println("Released");
+			
 
 		}
 		// Rotate around X axis
@@ -135,7 +180,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			System.out.println("Released");
+			
 		}
 		// Rotate around X axis
 		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
@@ -144,8 +189,44 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			System.out.println("Released");
+			
+		}
+		// Move forward
+		if (e.getKeyCode() == KeyEvent.VK_W && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_W) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
+		}
+		// Move backwards
+		if (e.getKeyCode() == KeyEvent.VK_S && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
 		}
 
+		// Move left
+		if (e.getKeyCode() == KeyEvent.VK_A && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_A) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
+		}
+		// Move right
+		if (e.getKeyCode() == KeyEvent.VK_D && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_D) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
+		}
 	}
 }
