@@ -60,21 +60,6 @@ public class ImportedModel implements GfxObjectInterface {
 		
 		  for(ModelPart modelPart : model.modelParts) {
 		  modelImporter.loadTextures(textureLoader, modelPart, materialLib); }
-		 
-		/*textureData.add(textureLoader.LoadTexture("SeaTexture.png"));
-		seaTextureId = textureData.get(0).getTextureObject();
-		textureData.add(textureLoader.LoadTexture("TerrainTexture.png"));
-		terrainTextureId = textureData.get(1).getTextureObject();
-		textureData.add(textureLoader.LoadTexture("LighthouseTexture.png"));
-		lighthouseTextureId = textureData.get(2).getTextureObject();
-		model.modelParts.get(0).textureId = seaTextureId;
-		model.modelParts.get(1).textureId = terrainTextureId;
-		model.modelParts.get(2).textureId = lighthouseTextureId;
-		model.modelParts.get(3).textureId = lighthouseTextureId;
-		model.modelParts.get(4).textureId = lighthouseTextureId;
-		model.modelParts.get(5).textureId = lighthouseTextureId;
-		System.out.println("SeaText ID: " + seaTextureId + " TerrainText ID: " + terrainTextureId
-				+ " LighthouseText ID: " + lighthouseTextureId);*/
 		
 		matrixService.setupUnitMatrix(modelMatrix);
 		matrixService.setupUnitMatrix3x3(normalMatrix);
@@ -108,7 +93,7 @@ public class ImportedModel implements GfxObjectInterface {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
-			// deallocator.deallocate(vertIndicesBuffer);
+			
 
 		} else {
 			System.err.println(
@@ -134,7 +119,7 @@ public class ImportedModel implements GfxObjectInterface {
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 
-		//gl4.glUseProgram(program.getProgramId());
+		
 		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
 		program.setNormalMatrix(gl4, normalMatrix, program.getProgramId());
 		gl4.glEnable(GL4.GL_CULL_FACE);
@@ -153,7 +138,7 @@ public class ImportedModel implements GfxObjectInterface {
 
 		gl4.glDisable(GL4.GL_CULL_FACE);
 
-		//gl4.glUseProgram(0);
+		
 
 	}
 

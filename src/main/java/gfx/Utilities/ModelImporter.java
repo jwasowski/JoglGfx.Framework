@@ -5,11 +5,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
+import com.jogamp.common.util.IOUtil;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -30,9 +35,9 @@ public class ModelImporter {
 	 */
 	public void loadModel(Model model, GL4 gl4) {
 		try {
-			File file = Paths.get(this.getClass().getResource("/Models/" + model.modelName).toURI()).toFile();
-			FileReader fr = new FileReader(file);
-			BufferedReader buffer = new BufferedReader(fr);
+			InputStream iS = accessFile("/Models/" + model.modelName);
+			InputStreamReader ir = new InputStreamReader(iS);
+			BufferedReader buffer = new BufferedReader(ir);
 			String line = "start";
 			int verticesCounter = 0, normalsCounter = 0, texturesCounter = 0, facesCounter = 0, objectsCounter = 0,
 					materialsCounter = 0, fileLineCounter = 0, currentPart = -1, indexOne = 1;
@@ -66,7 +71,7 @@ public class ModelImporter {
 							String v = s.split("/")[0];
 							String vt = s.split("/")[1];
 							String vn = s.split("/")[2];
-							//System.out.println("Line " + fileLineCounter);
+							
 							model.modelParts.get(currentPart).vertIndicesData.add(Integer.parseInt(v) - indexOne);
 							model.modelParts.get(currentPart).textIndicesData.add(Integer.parseInt(vt) - indexOne);
 							model.modelParts.get(currentPart).normIndicesData.add(Integer.parseInt(vn) - indexOne);
@@ -117,14 +122,6 @@ public class ModelImporter {
 					+ normalsCounter + " Textures: " + texturesCounter + " File lines: " + fileLineCounter);
 			System.out.println("Vertices List size: " + model.verticesData.size() + " Normals List size: "
 					+ model.normalsData.size() + " Textures List size: " + model.texturesData.size());
-			/*
-			 * System.out.println("Model Part 1 contains indice 1: " +
-			 * model.modelParts.get(0).vertIndicesData.contains(new Integer(1)) +
-			 * " ,Model Part 2 contains indice 1: " +
-			 * model.modelParts.get(1).vertIndicesData.contains(new Integer(1)) +
-			 * " ,Model Part 3 contains indice 1: " +
-			 * model.modelParts.get(2).vertIndicesData.contains(new Integer(1)));
-			 */
 			StringBuilder builder = new StringBuilder("");
 			for (int i = 0; i < model.modelParts.size(); i++) {
 				for (Integer n : model.modelParts.get(i).vertIndicesData) {
@@ -136,10 +133,10 @@ public class ModelImporter {
 				System.out.println("Model part " + i + " values: " + builder.toString());
 			}
 			System.out.println("Model data import completed in: " + elapsedTime + " ms");
-
+			iS.close();
 			buffer.close();
 
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			System.out.println("File not found or IO error!");
 			e.printStackTrace();
 		}
@@ -151,11 +148,10 @@ public class ModelImporter {
 	 * texture name data.
 	 */
 	public void loadMaterials(ModelMaterialLibrary lib, String libName) {
-		File file;
 		try {
-			file = Paths.get(this.getClass().getResource("/Materials/" + libName).toURI()).toFile();
-			FileReader fr = new FileReader(file);
-			BufferedReader buffer = new BufferedReader(fr);
+			InputStream iS = accessFile("/Materials/" + libName);
+			InputStreamReader ir = new InputStreamReader(iS);
+			BufferedReader buffer = new BufferedReader(ir);
 			String line = "start";
 			String[] arrayHelper;
 			int currentMaterial = -1;
@@ -202,18 +198,32 @@ public class ModelImporter {
 					}
 				}
 			}
+			iS.close();
 			buffer.close();
 			elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Number of materials: " + currentMaterial);
 			System.out.println("MaterialLib import completed in: " + elapsedTime + " ms");
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			System.out.println("File not found or IO error!");
 			e.printStackTrace();
 		}
 
 	}
+	/** https://stackoverflow.com/questions/20389255/reading-a-resource-file-from-within-jar*/
+	public static InputStream accessFile(String path) {
+        String resource = path;
 
-	/** For future use */
+        // this is the path within the jar file
+        InputStream input = ModelImporter.class.getResourceAsStream(resource);
+        if (input == null) {
+            // this is how we load file within editor (eg eclipse)
+            input = ModelImporter.class.getClassLoader().getResourceAsStream(resource);
+        }
+
+        return input;
+    }
+
+	/** Load texture by texture name from materials library. */
 	public void loadTextures(TextureLoader textureLoader, ModelPart modelPart, ModelMaterialLibrary materialsLib) {
 		String textureName = materialsLib.findTextureName(modelPart.materialName);
 		if (!textureName.equals("") && !textureName.equals(".")) {

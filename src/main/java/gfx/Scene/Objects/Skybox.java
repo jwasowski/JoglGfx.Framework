@@ -132,7 +132,7 @@ public class Skybox implements GfxObjectInterface {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		// gl4.glUseProgram(program.getProgramId());
+		
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 
 		gl4.glEnable(GL4.GL_CULL_FACE);
@@ -151,7 +151,7 @@ public class Skybox implements GfxObjectInterface {
 		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);
 
 		gl4.glBindVertexArray(0);
-		// gl4.glUseProgram(0);
+		
 
 	}
 
