@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.GLBuffers;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
+import com.jogamp.opengl.util.glsl.ShaderState;
 
 import graphicslib3D.Material;
 import graphicslib3D.light.PositionalLight;
@@ -32,20 +33,51 @@ public class ShaderProgramImportModel {
 	public int[] lightLocations;
 
 	public int initProgram(GL4 gl4) {
+		//TODO ShaderState is possible solution for managing uniforms and attribs
+		
+		
+		
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders/ImportModel", null,
-				"PointLight.vertex", null, null, true);
+				"PointLightvertex", null, null, true);
 
 		fragmentShader = ShaderCode.create(gl4, GL4.GL_FRAGMENT_SHADER, this.getClass(), "Shaders/ImportModel", null,
-				"PointLight.fragment", null, null, true);
+				"PointLightfragment", null, null, true);
+		vertexShader.defaultShaderCustomization(gl4, true, true);
+		fragmentShader.defaultShaderCustomization(gl4, true, true);
 		program = new ShaderProgram();
-		program.add(vertexShader);
-		program.add(fragmentShader);
+		program.add(gl4, vertexShader, System.err);
+		program.add(gl4, fragmentShader, System.err);
+		
 		program.link(gl4, System.out);
 		program.validateProgram(gl4, System.err);
+		
 		System.out.println("ImportModelProgram: " + program.id());
+		getAllUniformLocations(gl4);
+
+		return program.program();
+	}
+	
+	public void useProgram(GL4 gl4, ShaderState state) {
+		state.setVerbose(false);
+		state.attachShaderProgram(gl4, program, true);
+	}
+
+	public int getUniformLocation(String name, GL4 gl4) {
+		int location = -1;
+		gl4.glUseProgram(program.program());
+		location = gl4.glGetUniformLocation(program.program(), name);
+		if (location < 0) {
+			System.err.println("ERROR: Cannot find uniform location: " + name);
+		}
+		gl4.glUseProgram(0);
+		return location;
+	}
+	
+	public void getAllUniformLocations(GL4 gl4) {
 		modelMatrixLocation = getUniformLocation("model_matrix", gl4);
 		viewMatrixLocation = getUniformLocation("view_matrix", gl4);
 		projectionMatrixLocation = getUniformLocation("projection_matrix", gl4);
+		textureUnitLocation = getUniformLocation("texture_unit", gl4);
 		//lambdaLocation = getUniformLocation("lambda", gl4);
 		normalMatrixLocation = getUniformLocation("normal_matrix", gl4);
 		materialEmissionLocation = getUniformLocation("material.emission", gl4);
@@ -62,17 +94,7 @@ public class ShaderProgramImportModel {
 		lightAttenuationLocation = getUniformLocation("light.attenuation", gl4);
 		lightLocations = new int[] { lightPositionLocation, lightAmbientLocation, lightDiffuseLocation,
 				lightSpercularLocation, lightAttenuationLocation };
-
-		return program.program();
-	}
-
-	public int getUniformLocation(String name, GL4 gl4) {
-		int location = -1;
-		location = gl4.glGetUniformLocation(program.id(), name);
-		if (location < 0) {
-			System.err.println("ERROR: Cannot find uniform location: " + name);
-		}
-		return location;
+		System.out.println("ProjectionLoc: "+projectionMatrixLocation+" ViewLoc: "+viewMatrixLocation+" TextureLoc: "+textureUnitLocation);
 	}
 
 	public int getProgramId() {
@@ -80,7 +102,7 @@ public class ShaderProgramImportModel {
 	}
 
 	public void setTextureUnit(GL4 gl4, int t) {
-		gl4.glUseProgram(program.id());
+		gl4.glUseProgram(program.program());
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in setTextUnit-1: " + gl4.glGetError());
 		}

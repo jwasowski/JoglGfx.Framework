@@ -3,6 +3,7 @@ package gfx.Utilities.Shaders;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
+import com.jogamp.opengl.util.glsl.ShaderState;
 
 public class ShaderProgramSkybox {
 	private ShaderProgram program;
@@ -20,22 +21,35 @@ public class ShaderProgramSkybox {
 		program = new ShaderProgram();
 		program.add(vertexShader);
 		program.add(fragmentShader);
+		
 		program.link(gl4, System.out);
 		program.validateProgram(gl4, System.err);
 		System.out.println("SkyboxProgram: " + program.id());
-		textureUnitLocation = getUniformLocation("textureUnit", gl4);
-		projectionMatrixLocation = getUniformLocation("projectionMatrix", gl4);
-		viewMatrixLocation = getUniformLocation("viewMatrix", gl4);
+		getAllUniformLocations(gl4);
 		return program.program();
+	}
+	
+	public void useProgram(GL4 gl4, ShaderState state) {
+		state.setVerbose(false);
+		state.attachShaderProgram(gl4, program, true);
 	}
 
 	public int getUniformLocation(String name, GL4 gl4) {
 		int location = -1;
-		location = gl4.glGetUniformLocation(program.id(), name);
+		gl4.glUseProgram(program.program());
+		location = gl4.glGetUniformLocation(program.program(), name);
 		if (location < 0) {
 			System.err.println("ERROR: Cannot find uniform location: " + name);
 		}
+		gl4.glUseProgram(0);
 		return location;
+	}
+	
+	public void getAllUniformLocations(GL4 gl4) {
+		projectionMatrixLocation = getUniformLocation("projection_matrix", gl4);
+		viewMatrixLocation = getUniformLocation("view_matrix", gl4);
+		textureUnitLocation = getUniformLocation("texture_unit", gl4);
+		System.out.println("ProjectionLoc: "+projectionMatrixLocation+" ViewLoc: "+viewMatrixLocation+" TextureLoc: "+textureUnitLocation);
 	}
 	
 	public int getProgramId(){
@@ -43,7 +57,7 @@ public class ShaderProgramSkybox {
 	}
 
 	public void setTextureUnit(GL4 gl4, int t) {
-		gl4.glUseProgram(program.id());
+		gl4.glUseProgram(program.program());
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in setTextUnit-1: " + gl4.glGetError());
 		}

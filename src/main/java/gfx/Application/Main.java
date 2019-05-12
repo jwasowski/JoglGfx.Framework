@@ -8,6 +8,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 import gfx.Display.WindowBezier;
 import gfx.Display.WindowBezierPatch;
 import gfx.Display.WindowModelImport;
+import gfx.Display.Tests.WindowSkyboxTest;
 import gfx.Display.Tests.WindowTextureTest;
 
 public class Main {
@@ -27,6 +28,7 @@ public class Main {
 		//WindowBezierPatch bezierPatch = new WindowBezierPatch(window, animator, width, height, "Bezier test");
 		WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
 		//WindowTextureTest textureTest = new WindowTextureTest(window, animator, width, height, "Texturing test");
+		//WindowSkyboxTest skyboxTest = new WindowSkyboxTest(window, animator, width, height, "Skybox test");
 	}
 
 }

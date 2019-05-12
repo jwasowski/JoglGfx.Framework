@@ -26,7 +26,7 @@ public class ShaderProgramBezier {
 		System.out.println("Superprogram: " + program.id());
 		return program.program();
 	}
-	
+	//TODO Check behaviour with program.program()
 	public int getProgramId(){
 		return program.id();
 	}

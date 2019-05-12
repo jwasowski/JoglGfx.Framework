@@ -1,15 +1,15 @@
-#version 430 core
+#version 450 core
 
 in vec3 tex_coord;
 
 out vec4 out_Color;
 
-uniform  samplerCube textureUnit;
+uniform  samplerCube texture_unit;
 
 
 void main(void){
 
-    out_Color = texture(textureUnit, tex_coord);
+    out_Color = texture(texture_unit, tex_coord);
 
 }
 

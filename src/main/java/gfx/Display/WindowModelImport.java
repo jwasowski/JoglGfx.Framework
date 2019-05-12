@@ -8,6 +8,7 @@ import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.glsl.ShaderState;
 
 import gfx.Scene.Objects.ImportedModel;
 import gfx.Scene.Objects.Skybox;
@@ -24,6 +25,7 @@ public class WindowModelImport implements GLEventListener {
 	private GLWindow window;
 	private FPSAnimator animator;
 	int width, height;
+	public ShaderState state = new ShaderState();
 	private ShaderProgramImportModel program = new ShaderProgramImportModel();
 	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
 	private ImportedModel importedModel = new ImportedModel();
@@ -65,10 +67,10 @@ public class WindowModelImport implements GLEventListener {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		System.out.println("GL_RENDERER: " + gl4.glGetString(GL4.GL_RENDERER));
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
-		// drawable.setGL(new DebugGL4(gl4));
+		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
 		matrixService.setupUnitMatrix(pLocationRaw);
-		matrixService.translate(pLocationRaw, 0.0f, 20f, 0.0f);
+		matrixService.translate(pLocationRaw, 0.0f, 1.5f, 4.0f);
 		pLocation = new Point3D(pLocationRaw[0], pLocationRaw[5], pLocationRaw[10], pLocationRaw[15]);
 		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
@@ -86,7 +88,7 @@ public class WindowModelImport implements GLEventListener {
 		material.setShininess(96.078431f);
 
 		programId = program.initProgram(gl4);
-		gl4.glUseProgram(program.getProgramId());
+		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
 
 		matrixService.setupUnitMatrix(projectionMatrix);
@@ -96,22 +98,24 @@ public class WindowModelImport implements GLEventListener {
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
-
+		program.setTextureUnit(gl4, 0);
+		
+		
 		importedModel.viewMatrix = viewMatrix;
 		importedModel.setProgram(program);
 		importedModel.material = material;
 		importedModel.init(drawable);
 
 		skyboxProgramId = skyboxProgram.initProgram(gl4);
-		gl4.glUseProgram(skyboxProgram.getProgramId());
+		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
-		skyboxProgram.setProjectionMatrix(gl4, viewMatrix, skyboxProgramId);
+		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
 		skyboxProgram.setTextureUnit(gl4, 1);
 		
 		skybox.setProgram(skyboxProgram);
 		skybox.init(drawable);
 		
-		gl4.glUseProgram(0);
+		
 
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
@@ -136,11 +140,15 @@ public class WindowModelImport implements GLEventListener {
 		 * Point3D(pLocationRaw)); program.setLight(gl4, light, programId);
 		 */
 		importedModel.viewMatrix = viewMatrix;
-		importedModel.display(drawable);
-		//skybox.display(drawable);
+		program.useProgram(gl4, state);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
-
+		importedModel.display(drawable);
+		
+		skyboxProgram.useProgram(gl4, state);
+		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
+		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
+		skybox.display(drawable);
 	}
 
 	@Override

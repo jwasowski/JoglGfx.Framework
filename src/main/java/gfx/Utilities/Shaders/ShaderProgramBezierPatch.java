@@ -72,7 +72,7 @@ public class ShaderProgramBezierPatch {
 
 		return program.program();
 	}
-
+	//TODO Check behaviour with program.program()
 	public int getUniformLocation(String name, GL4 gl4) {
 		int location = -1;
 		location = gl4.glGetUniformLocation(program.id(), name);
