@@ -3,6 +3,7 @@ package gfx.Display.Tests;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.jogamp.common.nio.Buffers;
@@ -80,7 +81,7 @@ public class WindowSkyboxTest implements GLEventListener {
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		skyboxProgramId = skyboxProgram.initProgram(gl4);
 		skyboxProgram.useProgram(gl4, state);
-		textureData.add(textureLoader.loadCubeTexture(gl4, "ziemia.tga", false));
+		textureData.add(textureLoader.loadCubeTexture(gl4, Arrays.asList("ziemia.tga"), false));
 		testTextureId = textureData.get(0).getTextureObject();
 		System.out.println("TextureId: "+testTextureId);
 		matrixService.setupUnitMatrix(viewMatrix);

@@ -39,4 +39,5 @@ in project root folder.
 ## License
 
 This project is licensed under the GNU General Public License v2.0 - see the [LICENSE.md](LICENSE) file for details <br />
-JogAmp license - see https://jogamp.org/git/?p=jogl.git;a=blob;f=LICENSE.txt for details
+JogAmp license - see https://jogamp.org/git/?p=jogl.git;a=blob;f=LICENSE.txt for details <br />
+Starry night Skybox textures - author: Komaokc, https://gamebanana.com/textures/1881, license https://creativecommons.org/licenses/by-nc-nd/4.0/ <br />

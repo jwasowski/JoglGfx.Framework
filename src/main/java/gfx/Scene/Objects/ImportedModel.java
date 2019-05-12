@@ -20,8 +20,8 @@ import graphicslib3D.Material;
 
 public class ImportedModel implements GfxObjectInterface {
 
-	public float[] modelMatrixOne = new float[16];
-	public float[] normalMatrixOne = new float[9];
+	public float[] modelMatrix = new float[16];
+	public float[] normalMatrix = new float[9];
 	public float[] viewMatrix;
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
@@ -53,11 +53,10 @@ public class ImportedModel implements GfxObjectInterface {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
+		long startTime = System.currentTimeMillis();
+		long elapsedTime = 0L;
 		modelImporter.loadModel(model, gl4);
 		modelImporter.loadMaterials(materialLib, model.materialLibName);
-		
-		// TODO Texture assignment and loading should be model dependent, mtlLib needs
-		// to be edited manually each time
 		
 		  for(ModelPart modelPart : model.modelParts) {
 		  modelImporter.loadTextures(textureLoader, modelPart, materialLib); }
@@ -77,8 +76,8 @@ public class ImportedModel implements GfxObjectInterface {
 		System.out.println("SeaText ID: " + seaTextureId + " TerrainText ID: " + terrainTextureId
 				+ " LighthouseText ID: " + lighthouseTextureId);*/
 		
-		matrixService.setupUnitMatrix(modelMatrixOne);
-		matrixService.setupUnitMatrix3x3(normalMatrixOne);
+		matrixService.setupUnitMatrix(modelMatrix);
+		matrixService.setupUnitMatrix3x3(normalMatrix);
 
 		// Voa and Vbo Setups are in Model class
 		int vtnArraySize = 0;
@@ -92,7 +91,8 @@ public class ImportedModel implements GfxObjectInterface {
 		}
 		program.setMaterial(gl4, material, program.getProgramId());
 		gl4.glBindVertexArray(0);
-	
+		elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Imported Model Initialization completed in: " + elapsedTime + " ms");
 	}
 
 	/*
@@ -135,8 +135,8 @@ public class ImportedModel implements GfxObjectInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 
 		//gl4.glUseProgram(program.getProgramId());
-		program.setModelMatrix(gl4, modelMatrixOne, program.getProgramId());
-		program.setNormalMatrix(gl4, normalMatrixOne, program.getProgramId());
+		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
+		program.setNormalMatrix(gl4, normalMatrix, program.getProgramId());
 		gl4.glEnable(GL4.GL_CULL_FACE);
 		gl4.glCullFace(GL4.GL_BACK);
 
@@ -171,58 +171,58 @@ public class ImportedModel implements GfxObjectInterface {
 
 	@Override
 	public void rotateXAxisUp() {
-		matrixService.rotateAboutXAxis(modelMatrixOne, -0.5f);
-		matrixService.rotateAboutXAxis3x3(normalMatrixOne, 0.5f);
-		// matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
+	//matrixService.rotateAboutXAxis(modelMatrix, -0.5f);
+		matrixService.rotateAboutXAxis3x3(normalMatrix, 0.5f);
+		matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
 	}
 
 	@Override
 	public void rotateXAxisDown() {
-		matrixService.rotateAboutXAxis(modelMatrixOne, 0.5f);
-		matrixService.rotateAboutXAxis3x3(normalMatrixOne, -0.5f);
-		// matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
+		//matrixService.rotateAboutXAxis(modelMatrix, 0.5f);
+		matrixService.rotateAboutXAxis3x3(normalMatrix, -0.5f);
+		matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
 	}
 
 	@Override
 	public void rotateYAxisLeft() {
-		matrixService.rotateAboutYAxis(modelMatrixOne, 0.5f);
-		matrixService.rotateAboutYAxis3x3(normalMatrixOne, -0.5f);
-		// matrixService.rotateAboutYAxis(viewMatrix, 0.5f);
+		//matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
+		matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
+		matrixService.rotateAboutYAxis(viewMatrix, 0.5f);
 	}
 
 	@Override
 	public void rotateYAxisRight() {
-		matrixService.rotateAboutYAxis(modelMatrixOne, -0.5f);
-		matrixService.rotateAboutYAxis3x3(normalMatrixOne, 0.5f);
-		// matrixService.rotateAboutYAxis(viewMatrix, -0.5f);
+		//matrixService.rotateAboutYAxis(modelMatrix, -0.5f);
+		matrixService.rotateAboutYAxis3x3(normalMatrix, 0.5f);
+		matrixService.rotateAboutYAxis(viewMatrix, -0.5f);
 	}
 
 	@Override
 	public void moveForward() {
-		matrixService.translate(modelMatrixOne, 0, 0, 0.5f);
+		//matrixService.translate(modelMatrix, 0, 0, 0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, 0.5f);
-		// matrixService.translate(viewMatrix, 0, 0, 0.5f);
+		//matrixService.translate(viewMatrix, 0, 0, 0.5f);
 	}
 
 	@Override
 	public void moveBackwards() {
-		matrixService.translate(modelMatrixOne, 0, 0, -0.5f);
+		//matrixService.translate(modelMatrix, 0, 0, -0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, -0.5f);
-		// matrixService.translate(viewMatrix, 0, 0, -0.5f);
+		//matrixService.translate(viewMatrix, 0, 0, -0.5f);
 	}
 
 	@Override
 	public void moveLeft() {
-		matrixService.translate(modelMatrixOne, 0.5f, 0, 0);
+		//matrixService.translate(modelMatrix, 0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, 0.5f, 0, 0);
-		// matrixService.translate(viewMatrix, 0.5f, 0, 0);
+		//matrixService.translate(viewMatrix, 0.5f, 0, 0);
 	}
 
 	@Override
 	public void moveRight() {
-		matrixService.translate(modelMatrixOne, -0.5f, 0, 0);
+		//matrixService.translate(modelMatrix, -0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, -0.5f, 0, 0);
-		// matrixService.translate(viewMatrix, -0.5f, 0, 0);
+		//matrixService.translate(viewMatrix, -0.5f, 0, 0);
 	}
 
 }

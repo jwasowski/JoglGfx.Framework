@@ -3,6 +3,7 @@ package gfx.Scene.Objects;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.jogamp.common.nio.Buffers;
@@ -42,22 +43,34 @@ public class Skybox implements GfxObjectInterface {
 		this.program = program;
 	}
 
-	float[] textureVertexData = { -50.0f, 50.0f, 50.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, 50.0f, 50.0f, 1.0f, 1.0f, 1.0f,
-			1.0f, 50.0f, -50.0f, 50.0f, 1.0f, 1.0f, -1.0f, 1.0f, -50.0f, -50.0f, 50.0f, 1.0f, -1.0f, -1.0f, 1.0f,
+	// TODO Write method for automatic TexCoord Y param value reversing
+	float[] textureVertexData = { -50.0f, 50.0f, 50.0f, 1.0f, -1.0f, -1.0f, 1.0f, 50.0f, 50.0f, 50.0f, 1.0f, 1.0f,
+			-1.0f, 1.0f, 50.0f, -50.0f, 50.0f, 1.0f, 1.0f, 1.0f, 1.0f, -50.0f, -50.0f, 50.0f, 1.0f, -1.0f, 1.0f, 1.0f,
 
-			50.0f, 50.0f, -50.0f, 1.0f, 1.0f, 1.0f, -1.0f, -50.0f, 50.0f, -50.0f, 1.0f, -1.0f, 1.0f, -1.0f, -50.0f,
-			-50.0f, -50.0f, 1.0f, -1.0f, -1.0f, -1.0f, 50.0f, -50.0f, -50.0f, 1.0f, 1.0f, -1.0f, -1.0f };
-
+			50.0f, 50.0f, -50.0f, 1.0f, 1.0f, -1.0f, -1.0f, -50.0f, 50.0f, -50.0f, 1.0f, -1.0f, -1.0f, -1.0f, -50.0f,
+			-50.0f, -50.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f, -50.0f, -50.0f, 1.0f, 1.0f, 1.0f, -1.0f };
+	/*
+	 * { -50.0f, 50.0f, 50.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, 50.0f, 50.0f, 1.0f,
+	 * 1.0f, 1.0f, 1.0f, 50.0f, -50.0f, 50.0f, 1.0f, 1.0f, -1.0f, 1.0f, -50.0f,
+	 * -50.0f, 50.0f, 1.0f, -1.0f, -1.0f, 1.0f,
+	 * 
+	 * 50.0f, 50.0f, -50.0f, 1.0f, 1.0f, 1.0f, -1.0f, -50.0f, 50.0f, -50.0f, 1.0f,
+	 * -1.0f, 1.0f, -1.0f, -50.0f, -50.0f, -50.0f, 1.0f, -1.0f, -1.0f, -1.0f, 50.0f,
+	 * -50.0f, -50.0f, 1.0f, 1.0f, -1.0f, -1.0f };
+	 */
 	int[] indices = { 0, 1, 3, 1, 2, 3, 4, 5, 7, 5, 6, 7, 5, 4, 0, 4, 1, 0, 7, 6, 2, 6, 3, 2, 5, 0, 6, 0, 3, 6, 1, 4, 2,
 			4, 7, 2 };
-	
+
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		System.out.println("Skybox Initialization");
-		textureData.add(textureLoader.loadCubeTexture(gl4, "ziemia.tga", false));
+		textureData.add(textureLoader.loadCubeTexture(gl4,
+				Arrays.asList("Skybox/starrynightlf.png", "Skybox/starrynightrt.png", "Skybox/starrynightdn.png",
+						"Skybox/starrynightup.png", "Skybox/starrynightft.png", "Skybox/starrynightbk.png"),
+				false));
 		skyTextureId = textureData.get(0).getTextureObject();
-		System.out.println("Skybox TextureId: "+skyTextureId);
+		System.out.println("Skybox TextureId: " + skyTextureId);
 		// Voa Setup
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		gl4.glBindVertexArray(vertexArrayObject[0]);
@@ -84,12 +97,13 @@ public class Skybox implements GfxObjectInterface {
 		gl4.glGenBuffers(indexBufferObject.length, indexBufferObject, 0);
 		gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject[0]);
 		indicesBuffer = GLBuffers.newDirectIntBuffer(indices);
+
 		gl4.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer.limit() * Buffers.SIZEOF_INT, indicesBuffer,
 				GL4.GL_STATIC_DRAW);
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		gl4.glBindVertexArray(0);
-		//TODO Load cube texture with special parameters
-		
+		// TODO Load cube texture with special parameters
+
 	}
 
 	@Override
@@ -107,7 +121,7 @@ public class Skybox implements GfxObjectInterface {
 		}
 		gl4.glBindVertexArray(0);
 		gl4.glDeleteVertexArrays(1, vertexArrayObject, 0);
-		
+
 		if (program.getProgramId() != 0) {
 			program.disposeProgram(gl4);
 
@@ -118,26 +132,26 @@ public class Skybox implements GfxObjectInterface {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		//gl4.glUseProgram(program.getProgramId());
+		// gl4.glUseProgram(program.getProgramId());
 		gl4.glBindVertexArray(vertexArrayObject[0]);
-		
+
 		gl4.glEnable(GL4.GL_CULL_FACE);
 		gl4.glCullFace(GL4.GL_BACK);
 		gl4.glFrontFace(GL4.GL_CCW);
-		
+
 		gl4.glActiveTexture(GL4.GL_TEXTURE1);
 		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, skyTextureId);
-		
+
 		gl4.glDepthMask(false);
 		gl4.glDrawElements(GL4.GL_TRIANGLES, indices.length, GL4.GL_UNSIGNED_INT, 0);
 		gl4.glDepthMask(true);
-		
+
 		gl4.glDisable(GL4.GL_CULL_FACE);
-		
-		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP,0);
-		
+
+		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);
+
 		gl4.glBindVertexArray(0);
-		//gl4.glUseProgram(0);
+		// gl4.glUseProgram(0);
 
 	}
 
@@ -150,48 +164,41 @@ public class Skybox implements GfxObjectInterface {
 
 	@Override
 	public void rotateXAxisUp() {
-		
 
 	}
 
 	@Override
 	public void rotateXAxisDown() {
-		
 
 	}
 
 	@Override
 	public void rotateYAxisLeft() {
-		
 
 	}
 
 	@Override
 	public void rotateYAxisRight() {
-		
 
 	}
 
 	@Override
 	public void moveForward() {
-		
 
 	}
 
 	@Override
 	public void moveBackwards() {
-		
 
 	}
 
 	@Override
 	public void moveLeft() {
-		
+
 	}
 
 	@Override
 	public void moveRight() {
-		
 
 	}
 }

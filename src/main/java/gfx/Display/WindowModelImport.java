@@ -94,7 +94,7 @@ public class WindowModelImport implements GLEventListener {
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -13);
-		matrixService.rotateAboutXAxis(viewMatrix, 30);
+		//matrixService.rotateAboutXAxis(viewMatrix, 30);
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
@@ -142,6 +142,7 @@ public class WindowModelImport implements GLEventListener {
 		importedModel.viewMatrix = viewMatrix;
 		program.useProgram(gl4, state);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
+		viewMatrix = importedModel.viewMatrix;
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		importedModel.display(drawable);
 		

@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.nio.file.Paths;
+import java.util.List;
 
 import com.jogamp.common.util.IOUtil;
 import com.jogamp.opengl.GL;
@@ -43,20 +44,20 @@ public class TextureLoader {
 			GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 			GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-	public Texture loadCubeTexture(GL4 gl4, String textureFileName, boolean mipmapped) {
+	public Texture loadCubeTexture(GL4 gl4, List<String> textureFileNames, boolean mipmapped) {
 		Texture cubemap = TextureIO.newTexture(GL4.GL_TEXTURE_CUBE_MAP);
 		
 		try {
 			for (int i = 0; i < suffixes.length; i++) {
 				File file;
-				file = Paths.get(this.getClass().getResource("/textures/" + textureFileName).toURI()).toFile();
+				file = Paths.get(this.getClass().getResource("/textures/" + textureFileNames.get(i)).toURI()).toFile();
 				TextureData data = TextureIO.newTextureData(gl4.getGLProfile(), file, mipmapped,
 						IOUtil.getFileSuffix(file));
 				
 				if (data == null) {
-					throw new IOException("Unable to load texture " + textureFileName);
+					throw new IOException("Unable to load texture " + textureFileNames.get(i));
 				}
-				//data.setMustFlipVertically(true);
+				//data.setMustFlipVertically(false);
 				/*cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
 				cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
 				cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_WRAP_S, GL4.GL_CLAMP_TO_EDGE);
@@ -66,11 +67,7 @@ public class TextureLoader {
 				//cubemap.setMustFlipVertically(true);
 
 			}
-			cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
-			cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
-			cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_WRAP_S, GL4.GL_CLAMP_TO_EDGE);
-			cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_WRAP_T, GL4.GL_CLAMP_TO_EDGE);
-			cubemap.setTexParameteri(gl4, GL4.GL_TEXTURE_WRAP_R, GL4.GL_CLAMP_TO_EDGE);
+			
 			return cubemap;
 		} catch (GLException | IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
