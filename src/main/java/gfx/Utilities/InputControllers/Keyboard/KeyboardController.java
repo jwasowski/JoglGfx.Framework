@@ -7,20 +7,21 @@ import com.jogamp.newt.event.InputEvent;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
+import gfx.Display.DisplayInterface;
 import gfx.Display.WindowBezierPatch;
 import gfx.Display.WindowModelImport;
 import gfx.Scene.Objects.BezierPatch;
 import gfx.Scene.Objects.GfxObjectInterface;
-
+/** Keyboard input controller class. */
 public class KeyboardController implements KeyListener {
 
 	// TODO Create interfaces for Objects and make controller universal across
 	// all Object classes
 	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
 	private GfxObjectInterface gfxObjectInterface;
-	private WindowModelImport display;
+	private DisplayInterface display;
 
-	public KeyboardController(GfxObjectInterface gfxObjectInterface, WindowModelImport display) {
+	public KeyboardController(GfxObjectInterface gfxObjectInterface, DisplayInterface display) {
 		this.gfxObjectInterface = gfxObjectInterface;
 		this.display = display;
 	}
@@ -97,6 +98,22 @@ public class KeyboardController implements KeyListener {
 
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			display.shutDown();
+		}
+		// No fog
+		if (e.getKeyCode() == KeyEvent.VK_F1) {
+			display.setMistType(3);
+		}
+		// Fog linear
+		if (e.getKeyCode() == KeyEvent.VK_F2) {
+			display.setMistType(0);
+		}
+		// Low intensity fog
+		if (e.getKeyCode() == KeyEvent.VK_F3) {
+			display.setMistType(1);
+		}
+		// High intensity fog
+		if (e.getKeyCode() == KeyEvent.VK_F4) {
+			display.setMistType(2);
 		}
 		// Rotate around Y axis
 		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {

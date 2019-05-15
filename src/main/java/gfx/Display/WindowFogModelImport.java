@@ -10,26 +10,30 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.glsl.ShaderState;
 
+import gfx.Scene.Objects.FogImportedModel;
+import gfx.Scene.Objects.FogSkybox;
 import gfx.Scene.Objects.ImportedModel;
 import gfx.Scene.Objects.Skybox;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.TextureLoader;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
+import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
+import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
 import gfx.Utilities.Shaders.ShaderProgramSkybox;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.light.PositionalLight;
 
-public class WindowModelImport implements GLEventListener, DisplayInterface {
+public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private GLWindow window;
 	private FPSAnimator animator;
 	int width, height;
 	public ShaderState state = new ShaderState();
-	private ShaderProgramImportModel program = new ShaderProgramImportModel();
-	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
-	private ImportedModel importedModel = new ImportedModel();
-	private Skybox skybox = new Skybox();
+	private ShaderProgramFogImportModel program = new ShaderProgramFogImportModel();
+	private ShaderProgramFogSkybox skyboxProgram = new ShaderProgramFogSkybox();
+	private FogImportedModel importedModel = new FogImportedModel();
+	private FogSkybox skybox = new FogSkybox();
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
@@ -38,10 +42,11 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
-	private int programId, skyboxProgramId;
+	private float[] mist = { 0.8f, 0.8f, 0.7f, 1.0f, 3.0f, 60.0f, 0.05f };
+	private int programId, skyboxProgramId, mistType = 3;
 	private Material material;
 
-	public WindowModelImport(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
+	public WindowFogModelImport(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
 		this.window = windowPassed;
 		this.animator = animatorPassed;
 		this.width = width;
@@ -90,6 +95,8 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 		programId = program.initProgram(gl4);
 		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
+		program.setMist(gl4, mist, programId);
+		program.setMistType(gl4, mistType, programId);
 
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
@@ -99,8 +106,7 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setTextureUnit(gl4, 0);
-		
-		
+
 		importedModel.viewMatrix = viewMatrix;
 		importedModel.setProgram(program);
 		importedModel.material = material;
@@ -111,11 +117,11 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
 		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
 		skyboxProgram.setTextureUnit(gl4, 1);
-		
+		skyboxProgram.setMist(gl4, mist, skyboxProgramId);
+		skyboxProgram.setMistType(gl4, mistType, skyboxProgramId);
+
 		skybox.setProgram(skyboxProgram);
 		skybox.init(drawable);
-		
-		
 
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
@@ -144,11 +150,13 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		viewMatrix = importedModel.viewMatrix;
 		program.setViewMatrix(gl4, viewMatrix, programId);
+		program.setMistType(gl4, mistType, programId);
 		importedModel.display(drawable);
-		
+
 		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
 		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
+		skyboxProgram.setMistType(gl4, mistType, skyboxProgramId);
 		skybox.display(drawable);
 	}
 
@@ -161,6 +169,12 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gfx.Display.DisplayShutDownInterface#shutDown()
+	 */
+	@Override
 	public void shutDown() {
 		// Use a dedicate thread to run the stop() to ensure that the
 		// animator stops before program exits.
@@ -176,8 +190,7 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 
 	@Override
 	public void setMistType(int type) {
-		// TODO Auto-generated method stub
-		
+		mistType = type;
 	}
 
 }

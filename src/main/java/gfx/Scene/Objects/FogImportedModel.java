@@ -15,10 +15,11 @@ import gfx.Utilities.DeallocationHelper;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.ModelImporter;
 import gfx.Utilities.TextureLoader;
+import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
 import graphicslib3D.Material;
 
-public class ImportedModel implements GfxObjectInterface {
+public class FogImportedModel implements GfxObjectInterface {
 
 	public float[] modelMatrix = new float[16];
 	public float[] normalMatrix = new float[9];
@@ -26,7 +27,7 @@ public class ImportedModel implements GfxObjectInterface {
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
 	private DeallocationHelper deallocator = new DeallocationHelper();
-	protected ShaderProgramImportModel program;
+	protected ShaderProgramFogImportModel program;
 	//public ShaderState state;
 	public List<Texture> textureData = new ArrayList<>();
 	public Material material;
@@ -38,7 +39,7 @@ public class ImportedModel implements GfxObjectInterface {
 
 	public int seaTextureId, lighthouseTextureId, terrainTextureId;
 
-	public void setProgram(ShaderProgramImportModel program) {
+	public void setProgram(ShaderProgramFogImportModel program) {
 		this.program = program;
 	}
 

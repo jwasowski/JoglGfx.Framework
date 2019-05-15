@@ -5,7 +5,11 @@ This project is about learning how to use OpenGL. It is written in Java using "J
 
 jogl-JW-project Computer graphics class Project continuation using JOGL. <br />
 Goals for future versions:<br />
-Complete assignments -> Framework version 1.0<br />
+Wavefront OBJ model importer and Skybox implementation -> Framework version 0.5<br /> 
+Fog implementation -> Framework version 0.62<br />
+Sprites implementation -> Framework version 0.75<br /> 
+Bump mapping implementation -> Framework version 0.87<br />
+Depth of field implementation -> Framework version 1.0<br /> 
 Implement Shadow mapping -> Framework version 1.1<br />
 Extraction of Interfaces and  modeling of Superclasses -> Framework version 1.2<br />
 
@@ -25,6 +29,7 @@ End - switch to Orthogonal Projection
 PageUp - zoom in
 PageDown - zoom out
 Escape - close app
+F1 to F4 - are used for changing fog type in scenes supporting fog
 ```
 To create a jar with the app, simply use maven command:
 ```
