@@ -1,18 +1,26 @@
 package gfx.Utilities.InputControllers.Mouse;
 
+import java.util.Arrays;
+
 import com.jogamp.nativewindow.util.Dimension;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import com.jogamp.opengl.glu.GLU;
 
+import gfx.Display.DisplayInterface;
 import gfx.Display.WindowBezierPatch;
-/** @deprecated */
+import gfx.Utilities.MatrixService;
+/** */
 public class MouseController implements MouseListener {
-	private int width, height, prevMouseX, prevMouseY;
+	private int prevMouseX, prevMouseY;
 	public int[] mouseCoords = new int[3];
-	private float cameraAngleAboutY, cameraDefaultZ = -10;
-	private WindowBezierPatch display;
+	private float[] viewMatrix;
+	private float angleX,angleY;
+	private DisplayInterface display;
+	private MatrixService matrixService = new MatrixService();
 
-	public MouseController(WindowBezierPatch display){
+
+	public MouseController(DisplayInterface display){
 		mouseCoords[0]=0;
 		mouseCoords[1]=0;
 		mouseCoords[2]=0;
@@ -52,7 +60,7 @@ public class MouseController implements MouseListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		System.out.println("Mouse coords X: "+e.getX()+" Y: "+e.getY());
+		//System.out.println("Mouse coords X: "+e.getX()+" Y: "+e.getY());
 	}
 
 	@Override
@@ -61,20 +69,25 @@ public class MouseController implements MouseListener {
 		mouseCoords[1]=e.getY();
 		int x = e.getX();		//get current mouse loc
 		int y = e.getY();
-		Dimension size = new Dimension(width, height) ;  //get size of frame
-
-		float mouseDeltaXInDegrees = 360.0f * ( (float)(x-prevMouseX) / (float)size.getWidth());
-		float mouseDeltaYInScreenPercent = ( (float)(prevMouseY-y) / (float)size.getWidth());
-
+		//Dimension size = new Dimension(width, height) ;  //get size of frame
+		
+		Dimension size = new Dimension(1280, 720) ;
+		if(prevMouseX>= 0 && prevMouseY>=0) {
+		angleX=(prevMouseY-y)/2;
+		angleY=(prevMouseX-x)/2;
+		
+		
 		prevMouseX = x;		//save current mouse loc for next drag
 		prevMouseY = y;
 
-		cameraAngleAboutY += mouseDeltaXInDegrees;
-		cameraDefaultZ = cameraDefaultZ - (mouseDeltaYInScreenPercent*cameraDefaultZ) ;
-
-		display.viewMatrix[0] = (float) (cameraDefaultZ * Math.sin(Math.toRadians(cameraAngleAboutY)));
-		display.viewMatrix[10] = (float) (cameraDefaultZ * Math.cos(Math.toRadians(cameraAngleAboutY)));
-
+		
+		
+		viewMatrix = display.getViewMatrix();
+		//System.out.println("ViewMatrix coords X: "+viewMatrix[0]+" Y: "+viewMatrix[5]+" Z: "+viewMatrix[10]);
+		matrixService.rotateAboutXAxis(viewMatrix, angleX);
+		matrixService.rotateAboutYAxis(viewMatrix, angleY);
+		//System.out.println("ViewMatrix coords: "+Arrays.toString(viewMatrix));
+		display.setViewMatrix(viewMatrix);}
 	}
 
 	@Override
@@ -82,4 +95,5 @@ public class MouseController implements MouseListener {
 		
 
 	}
+
 }

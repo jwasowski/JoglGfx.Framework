@@ -18,7 +18,7 @@ import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.light.PositionalLight;
 
-@SuppressWarnings("deprecation")
+
 public class WindowBezierPatch implements GLEventListener {
 	private GLWindow window;
 	private FPSAnimator animator;
@@ -29,7 +29,7 @@ public class WindowBezierPatch implements GLEventListener {
 	private MatrixService matrixService = new MatrixService();
 	/*KeyboardController keyboardController = new KeyboardController(bezierPatchOne, bezierPatchTwo, bezierPatchFloor,
 			this);*/
-	MouseController mouseController = new MouseController(this);
+	//MouseController mouseController = new MouseController(this);
 	private int programId;
 	Material material = new Material();
 	PositionalLight light = new PositionalLight();
@@ -143,7 +143,7 @@ public class WindowBezierPatch implements GLEventListener {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		//keyboardController.controlKeyboard();
-		lookAt();
+		//lookAt();
 		bezierPatchOne.display(drawable);
 		bezierPatchTwo.display(drawable);
 		bezierPatchFloor.display(drawable);
@@ -172,8 +172,14 @@ public class WindowBezierPatch implements GLEventListener {
 		}.start();
 	}
 
-	private void lookAt() {
+	/*private void lookAt() {
 		glu.gluLookAt(viewMatrix[0], viewMatrix[5], viewMatrix[10],
-				mouseController.mouseCoords[0], mouseController.mouseCoords[1], 0/* z */, 0, 1, 0);
+				mouseController.mouseCoords[0], mouseController.mouseCoords[1], 0 z , 0, 1, 0);
 	}
+
+	@Override
+	public void setMistType(int type) {
+		// TODO Auto-generated method stub
+		
+	}*/
 }

@@ -1,5 +1,7 @@
 package gfx.Display;
 
+import java.util.Arrays;
+
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -7,6 +9,7 @@ import com.jogamp.opengl.DebugGL4;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.glsl.ShaderState;
 
@@ -17,6 +20,7 @@ import gfx.Scene.Objects.Skybox;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.TextureLoader;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
+import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
@@ -37,12 +41,13 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
+	private MouseController mouseController = new MouseController(this);
 
 	private float[] pLocationRaw = new float[16];
 	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
-	private float[] mist = { 0.8f, 0.8f, 0.7f, 1.0f, 3.0f, 60.0f, 0.05f };
+	private float[] mist = { 0.3f, 0.3f, 0.3f, 1.0f, 3.0f, 60.0f, 0.05f };
 	private int programId, skyboxProgramId, mistType = 3;
 	private Material material;
 
@@ -58,7 +63,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 			};
 		});
 		window.addGLEventListener(this);
-		// window.addMouseListener(this);
+		window.addMouseListener(mouseController);
 		window.addKeyListener(keyboardController);
 		window.setSize(width, height);
 		window.setTitle(name);
@@ -101,6 +106,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -13);
+		System.out.println("ViewMatrix: "+Arrays.toString(viewMatrix));
 		matrixService.rotateAboutXAxis(viewMatrix, 15);
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
@@ -139,6 +145,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		keyboardController.controlKeyboard();
+		
 		/*
 		 * matrixService.rotateAboutYAxis(pLocationRaw, 0.15f);
 		 * pLocation.setX(pLocationRaw[0]); pLocation.setY(pLocationRaw[5]);
@@ -187,10 +194,23 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 			}
 		}.start();
 	}
-
+	
+	
 	@Override
 	public void setMistType(int type) {
 		mistType = type;
+	}
+
+	@Override
+	public float[] getViewMatrix() {
+		
+		return viewMatrix;
+	}
+
+	@Override
+	public void setViewMatrix(float[] viewMatrix) {
+		this.viewMatrix = viewMatrix;
+		
 	}
 
 }

@@ -187,28 +187,28 @@ public class FogImportedModel implements GfxObjectInterface {
 	public void moveForward() {
 		//matrixService.translate(modelMatrix, 0, 0, 0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, 0.5f);
-		//matrixService.translate(viewMatrix, 0, 0, 0.5f);
+		matrixService.translate(viewMatrix, 0, 0, 0.5f);
 	}
 
 	@Override
 	public void moveBackwards() {
 		//matrixService.translate(modelMatrix, 0, 0, -0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, -0.5f);
-		//matrixService.translate(viewMatrix, 0, 0, -0.5f);
+		matrixService.translate(viewMatrix, 0, 0, -0.5f);
 	}
 
 	@Override
 	public void moveLeft() {
 		//matrixService.translate(modelMatrix, 0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, 0.5f, 0, 0);
-		//matrixService.translate(viewMatrix, 0.5f, 0, 0);
+		matrixService.translate(viewMatrix, 0.5f, 0, 0);
 	}
 
 	@Override
 	public void moveRight() {
 		//matrixService.translate(modelMatrix, -0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, -0.5f, 0, 0);
-		//matrixService.translate(viewMatrix, -0.5f, 0, 0);
+		matrixService.translate(viewMatrix, -0.5f, 0, 0);
 	}
 
 }

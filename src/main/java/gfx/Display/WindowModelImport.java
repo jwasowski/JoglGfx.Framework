@@ -180,4 +180,16 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 		
 	}
 
+	@Override
+	public float[] getViewMatrix() {
+		
+		return viewMatrix;
+	}
+
+	@Override
+	public void setViewMatrix(float[] viewMatrix) {
+		this.viewMatrix = viewMatrix;
+		
+	}
+
 }
