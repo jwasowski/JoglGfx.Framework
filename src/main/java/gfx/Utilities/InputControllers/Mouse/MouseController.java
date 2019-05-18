@@ -1,30 +1,27 @@
 package gfx.Utilities.InputControllers.Mouse;
 
-import java.util.Arrays;
-
-import com.jogamp.nativewindow.util.Dimension;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
-import com.jogamp.opengl.glu.GLU;
 
 import gfx.Display.DisplayInterface;
-import gfx.Display.WindowBezierPatch;
 import gfx.Utilities.MatrixService;
-/** */
-public class MouseController implements MouseListener {
+/** Primitive mouse controller.*/
+public class MouseController implements MouseListener{
 	private int prevMouseX, prevMouseY;
 	public int[] mouseCoords = new int[3];
 	private float[] viewMatrix;
+	float[] projectionMatrix;
 	private float angleX,angleY;
 	private DisplayInterface display;
-	private MatrixService matrixService = new MatrixService();
+	private MatrixService matrixService;
 
 
-	public MouseController(DisplayInterface display){
+	public MouseController(DisplayInterface display, MatrixService matrixService){
 		mouseCoords[0]=0;
 		mouseCoords[1]=0;
 		mouseCoords[2]=0;
 		this.display = display;
+		this.matrixService = matrixService;
 	}
 	
 	
@@ -69,31 +66,33 @@ public class MouseController implements MouseListener {
 		mouseCoords[1]=e.getY();
 		int x = e.getX();		//get current mouse loc
 		int y = e.getY();
-		//Dimension size = new Dimension(width, height) ;  //get size of frame
-		
-		Dimension size = new Dimension(1280, 720) ;
+
 		if(prevMouseX>= 0 && prevMouseY>=0) {
-		angleX=(prevMouseY-y)/2;
-		angleY=(prevMouseX-x)/2;
+		angleX=(prevMouseX-x)*0.1f;
+		angleY=(prevMouseY-y)*0.1f;
 		
+		projectionMatrix = display.getProjectionMatrix();
 		
 		prevMouseX = x;		//save current mouse loc for next drag
 		prevMouseY = y;
-
-		
-		
 		viewMatrix = display.getViewMatrix();
-		//System.out.println("ViewMatrix coords X: "+viewMatrix[0]+" Y: "+viewMatrix[5]+" Z: "+viewMatrix[10]);
-		matrixService.rotateAboutXAxis(viewMatrix, angleX);
-		matrixService.rotateAboutYAxis(viewMatrix, angleY);
-		//System.out.println("ViewMatrix coords: "+Arrays.toString(viewMatrix));
-		display.setViewMatrix(viewMatrix);}
+		
+		
+		
+		
+		//local
+		matrixService.rotateAboutYAxis(viewMatrix, angleX);
+		display.setViewMatrix(viewMatrix);
+		//global
+		matrixService.rotateAboutXAxis(projectionMatrix, angleY);
+		
+		display.setProjectionMatrix(projectionMatrix);
+		}
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e) {
 		
-
 	}
 
 }

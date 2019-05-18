@@ -27,4 +27,8 @@ public interface GfxObjectInterface {
 	void moveLeft();
 	
 	void moveRight();
+	
+	void incAltitude();
+	
+	void decAltitude();
 }

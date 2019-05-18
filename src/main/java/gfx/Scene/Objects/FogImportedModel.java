@@ -24,6 +24,7 @@ public class FogImportedModel implements GfxObjectInterface {
 	public float[] modelMatrix = new float[16];
 	public float[] normalMatrix = new float[9];
 	public float[] viewMatrix;
+	public float[] projectionMatrix;
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
 	private DeallocationHelper deallocator = new DeallocationHelper();
@@ -159,14 +160,16 @@ public class FogImportedModel implements GfxObjectInterface {
 	public void rotateXAxisUp() {
 		//matrixService.rotateAboutXAxis(modelMatrix, -0.5f);
 		//matrixService.rotateAboutXAxis3x3(normalMatrix, 0.5f);
-		matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
+		//matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
+		matrixService.rotateAboutXAxis(projectionMatrix, -0.5f);
 	}
 
 	@Override
 	public void rotateXAxisDown() {
 		//matrixService.rotateAboutXAxis(modelMatrix, 0.5f);
 		//matrixService.rotateAboutXAxis3x3(normalMatrix, -0.5f);
-		matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
+		//matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
+		matrixService.rotateAboutXAxis(projectionMatrix, 0.5f);
 	}
 
 	@Override
@@ -187,28 +190,44 @@ public class FogImportedModel implements GfxObjectInterface {
 	public void moveForward() {
 		//matrixService.translate(modelMatrix, 0, 0, 0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, 0.5f);
-		matrixService.translate(viewMatrix, 0, 0, 0.5f);
+		matrixService.translate(projectionMatrix, 0, 0, 0.5f);
 	}
 
 	@Override
 	public void moveBackwards() {
 		//matrixService.translate(modelMatrix, 0, 0, -0.5f);
 		//matrixService.translate(normalMatrixOne, 0, 0, -0.5f);
-		matrixService.translate(viewMatrix, 0, 0, -0.5f);
+		matrixService.translate(projectionMatrix, 0, 0, -0.5f);
 	}
 
 	@Override
 	public void moveLeft() {
 		//matrixService.translate(modelMatrix, 0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, 0.5f, 0, 0);
-		matrixService.translate(viewMatrix, 0.5f, 0, 0);
+		matrixService.translate(projectionMatrix, 0.5f, 0, 0);
 	}
 
 	@Override
 	public void moveRight() {
 		//matrixService.translate(modelMatrix, -0.5f, 0, 0);
 		//matrixService.translate(normalMatrixOne, -0.5f, 0, 0);
-		matrixService.translate(viewMatrix, -0.5f, 0, 0);
+		matrixService.translate(projectionMatrix, -0.5f, 0, 0);
+	}
+
+
+
+	@Override
+	public void incAltitude() {
+		matrixService.translate(projectionMatrix, 0, -0.5f, 0);
+		
+	}
+
+
+
+	@Override
+	public void decAltitude() {
+		matrixService.translate(projectionMatrix, 0, 0.5f, 0);
+		
 	}
 
 }

@@ -181,14 +181,38 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 	}
 
 	@Override
-	public float[] getViewMatrix() {
+	public float[] getLocalModelMatrix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLocalModelMatrix(float[] modelMatrix) {
+		// TODO Auto-generated method stub
 		
-		return viewMatrix;
+	}
+
+	@Override
+	public float[] getViewMatrix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void setViewMatrix(float[] viewMatrix) {
-		this.viewMatrix = viewMatrix;
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public float[] getProjectionMatrix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setProjectionMatrix(float[] projectionMatrix) {
+		// TODO Auto-generated method stub
 		
 	}
 

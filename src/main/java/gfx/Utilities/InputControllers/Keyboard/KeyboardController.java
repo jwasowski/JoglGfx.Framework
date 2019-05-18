@@ -15,8 +15,7 @@ import gfx.Scene.Objects.GfxObjectInterface;
 /** Keyboard input controller class. */
 public class KeyboardController implements KeyListener {
 
-	// TODO Create interfaces for Objects and make controller universal across
-	// all Object classes
+	
 	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
 	private GfxObjectInterface gfxObjectInterface;
 	private DisplayInterface display;
@@ -52,6 +51,12 @@ public class KeyboardController implements KeyListener {
 				}
 				if (keyEvent.getKeyCode() == KeyEvent.VK_D) {
 					moveRight();
+				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_Q) {
+					decAltitude();
+				}
+				if (keyEvent.getKeyCode() == KeyEvent.VK_E) {
+					incAltitude();
 				}
 			});
 		}
@@ -91,6 +96,14 @@ public class KeyboardController implements KeyListener {
 
 	public void moveRight() {
 		gfxObjectInterface.moveRight();
+	}
+	
+	public void incAltitude() {
+		gfxObjectInterface.incAltitude();
+	}
+	
+	public void decAltitude() {
+		gfxObjectInterface.decAltitude();
 	}
 
 	@Override
@@ -160,6 +173,18 @@ public class KeyboardController implements KeyListener {
 		}
 		// Move right
 		if (e.getKeyCode() == KeyEvent.VK_D && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		
+		if (e.getKeyCode() == KeyEvent.VK_Q && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+
+			keySet.add(e);
+
+		}
+		
+		if (e.getKeyCode() == KeyEvent.VK_E && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 
 			keySet.add(e);
 
@@ -240,6 +265,24 @@ public class KeyboardController implements KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_D && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 			for (KeyEvent keyEvent : keySet) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_D) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
+		}
+		
+		if (e.getKeyCode() == KeyEvent.VK_Q && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_Q) {
+					keySet.remove(keyEvent);
+				}
+			}
+			
+		}
+		
+		if (e.getKeyCode() == KeyEvent.VK_E && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
+			for (KeyEvent keyEvent : keySet) {
+				if (keyEvent.getKeyCode() == KeyEvent.VK_E) {
 					keySet.remove(keyEvent);
 				}
 			}

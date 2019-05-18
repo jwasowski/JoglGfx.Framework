@@ -9,22 +9,16 @@ import com.jogamp.opengl.DebugGL4;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.glsl.ShaderState;
 
 import gfx.Scene.Objects.FogImportedModel;
 import gfx.Scene.Objects.FogSkybox;
-import gfx.Scene.Objects.ImportedModel;
-import gfx.Scene.Objects.Skybox;
 import gfx.Utilities.MatrixService;
-import gfx.Utilities.TextureLoader;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
 import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
-import gfx.Utilities.Shaders.ShaderProgramImportModel;
-import gfx.Utilities.Shaders.ShaderProgramSkybox;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.light.PositionalLight;
@@ -41,7 +35,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
-	private MouseController mouseController = new MouseController(this);
+	private MouseController mouseController = new MouseController(this, matrixService);
 
 	private float[] pLocationRaw = new float[16];
 	private Point3D pLocation;
@@ -105,10 +99,10 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
-		matrixService.translate(viewMatrix, 0, 0, -13);
-		System.out.println("ViewMatrix: "+Arrays.toString(viewMatrix));
+		matrixService.translate(viewMatrix, 0, -4, -10);
 		matrixService.rotateAboutXAxis(viewMatrix, 15);
-		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
+		System.out.println("ViewMatrix: "+Arrays.toString(viewMatrix));
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 250.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setTextureUnit(gl4, 0);
@@ -153,9 +147,11 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		 * Point3D(pLocationRaw)); program.setLight(gl4, light, programId);
 		 */
 		importedModel.viewMatrix = viewMatrix;
+		importedModel.projectionMatrix = projectionMatrix;
 		program.useProgram(gl4, state);
-		program.setProjectionMatrix(gl4, projectionMatrix, programId);
+		projectionMatrix = importedModel.projectionMatrix;
 		viewMatrix = importedModel.viewMatrix;
+		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setMistType(gl4, mistType, programId);
 		importedModel.display(drawable);
@@ -170,7 +166,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 250.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		gl4.glViewport(0, 0, width, height);
 
@@ -201,6 +197,19 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		mistType = type;
 	}
 
+
+	@Override
+	public float[] getLocalModelMatrix() {
+		
+		return importedModel.modelMatrix;
+	}
+
+	@Override
+	public void setLocalModelMatrix(float[] modelMatrix) {
+		
+		this.importedModel.modelMatrix = modelMatrix;
+	}
+
 	@Override
 	public float[] getViewMatrix() {
 		
@@ -210,6 +219,18 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	@Override
 	public void setViewMatrix(float[] viewMatrix) {
 		this.viewMatrix = viewMatrix;
+		
+	}
+
+	@Override
+	public float[] getProjectionMatrix() {
+		// TODO Auto-generated method stub
+		return projectionMatrix;
+	}
+
+	@Override
+	public void setProjectionMatrix(float[] projectionMatrix) {
+		this.projectionMatrix = projectionMatrix;
 		
 	}
 

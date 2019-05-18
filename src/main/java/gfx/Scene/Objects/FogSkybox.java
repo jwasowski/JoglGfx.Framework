@@ -24,8 +24,8 @@ import gfx.Utilities.Shaders.ShaderProgramSkybox;
 import graphicslib3D.Material;
 
 public class FogSkybox implements GfxObjectInterface {
-	public float[] modelMatrixOne = new float[16];
-	public float[] normalMatrixOne = new float[16];
+	//public float[] modelMatrixOne = new float[16];
+	//public float[] normalMatrixOne = new float[16];
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
 	protected final int[] indexBufferObject = new int[1];
@@ -116,6 +116,7 @@ public class FogSkybox implements GfxObjectInterface {
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
 			deallocator.deallocate(textureVertexBuffer);
+			deallocator.deallocate(indicesBuffer);
 		} else {
 			System.err.println(
 					"Java version: " + System.getProperty("java.version") + " is not supported by buffer deallocator.");
@@ -201,5 +202,17 @@ public class FogSkybox implements GfxObjectInterface {
 	@Override
 	public void moveRight() {
 
+	}
+
+	@Override
+	public void incAltitude() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void decAltitude() {
+		// TODO Auto-generated method stub
+		
 	}
 }

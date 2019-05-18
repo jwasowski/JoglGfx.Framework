@@ -210,4 +210,20 @@ public class ImportedModel implements GfxObjectInterface {
 		//matrixService.translate(viewMatrix, -0.5f, 0, 0);
 	}
 
+
+
+	@Override
+	public void incAltitude() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void decAltitude() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

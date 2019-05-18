@@ -201,4 +201,16 @@ public class Skybox implements GfxObjectInterface {
 	public void moveRight() {
 
 	}
+
+	@Override
+	public void incAltitude() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void decAltitude() {
+		// TODO Auto-generated method stub
+		
+	}
 }
