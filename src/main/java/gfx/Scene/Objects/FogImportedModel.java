@@ -29,22 +29,20 @@ public class FogImportedModel implements GfxObjectInterface {
 	private TextureLoader textureLoader = new TextureLoader();
 	private DeallocationHelper deallocator = new DeallocationHelper();
 	protected ShaderProgramFogImportModel program;
-	//public ShaderState state;
+	// public ShaderState state;
 	public List<Texture> textureData = new ArrayList<>();
 	public Material material;
 	ModelImporter modelImporter = new ModelImporter();
 	// TODO create constructor with model name param pointing at file
 	public Model model = new Model("krajobraz.obj");
-	//public Model model = new Model("WomanAnimTest2.obj");
+	// public Model model = new Model("WomanAnimTest2.obj");
 	public ModelMaterialLibrary materialLib = new ModelMaterialLibrary();
 
-	public int seaTextureId, lighthouseTextureId, terrainTextureId;
+	public int cloudTextureId, lighthouseTextureId, terrainTextureId;
 
 	public void setProgram(ShaderProgramFogImportModel program) {
 		this.program = program;
 	}
-
-	
 
 	/*
 	 * (non-Javadoc)
@@ -59,13 +57,14 @@ public class FogImportedModel implements GfxObjectInterface {
 		long elapsedTime = 0L;
 		modelImporter.loadModel(model, gl4);
 		modelImporter.loadMaterials(materialLib, model.materialLibName);
-		
-		  for(ModelPart modelPart : model.modelParts) {
-		  modelImporter.loadTextures(textureLoader, modelPart, materialLib); }
-		
+
+		for (ModelPart modelPart : model.modelParts) {
+			modelImporter.loadTextures(textureLoader, modelPart, materialLib);
+		}
+		textureData.add(textureLoader.loadTexture("cloud.jpg"));
+		cloudTextureId = textureData.get(0).getTextureObject();
 		matrixService.setupUnitMatrix(modelMatrix);
 		matrixService.setupUnitMatrix3x3(normalMatrix);
-		
 
 		// Voa and Vbo Setups are in Model class
 		int vtnArraySize = 0;
@@ -96,7 +95,6 @@ public class FogImportedModel implements GfxObjectInterface {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
-			
 
 		} else {
 			System.err.println(
@@ -140,8 +138,6 @@ public class FogImportedModel implements GfxObjectInterface {
 
 		gl4.glDisable(GL4.GL_CULL_FACE);
 
-		
-
 	}
 
 	/*
@@ -158,76 +154,72 @@ public class FogImportedModel implements GfxObjectInterface {
 
 	@Override
 	public void rotateXAxisUp() {
-		//matrixService.rotateAboutXAxis(modelMatrix, -0.5f);
-		//matrixService.rotateAboutXAxis3x3(normalMatrix, 0.5f);
-		//matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
+		// matrixService.rotateAboutXAxis(modelMatrix, -0.5f);
+		// matrixService.rotateAboutXAxis3x3(normalMatrix, 0.5f);
+		// matrixService.rotateAboutXAxis(viewMatrix, -0.5f);
 		matrixService.rotateAboutXAxis(projectionMatrix, -0.5f);
 	}
 
 	@Override
 	public void rotateXAxisDown() {
-		//matrixService.rotateAboutXAxis(modelMatrix, 0.5f);
-		//matrixService.rotateAboutXAxis3x3(normalMatrix, -0.5f);
-		//matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
+		// matrixService.rotateAboutXAxis(modelMatrix, 0.5f);
+		// matrixService.rotateAboutXAxis3x3(normalMatrix, -0.5f);
+		// matrixService.rotateAboutXAxis(viewMatrix, 0.5f);
 		matrixService.rotateAboutXAxis(projectionMatrix, 0.5f);
 	}
 
 	@Override
 	public void rotateYAxisLeft() {
-		//matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
-		//matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
+		// matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
+		// matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
 		matrixService.rotateAboutYAxis(viewMatrix, 0.5f);
 	}
 
 	@Override
 	public void rotateYAxisRight() {
-		//matrixService.rotateAboutYAxis(modelMatrix, -0.5f);
-		//matrixService.rotateAboutYAxis3x3(normalMatrix, 0.5f);
+		// matrixService.rotateAboutYAxis(modelMatrix, -0.5f);
+		// matrixService.rotateAboutYAxis3x3(normalMatrix, 0.5f);
 		matrixService.rotateAboutYAxis(viewMatrix, -0.5f);
 	}
 
 	@Override
 	public void moveForward() {
-		//matrixService.translate(modelMatrix, 0, 0, 0.5f);
-		//matrixService.translate(normalMatrixOne, 0, 0, 0.5f);
-		matrixService.translate(projectionMatrix, 0, 0, 0.5f);
+		// matrixService.translate(modelMatrix, 0, 0, 0.5f);
+		// matrixService.translate(normalMatrixOne, 0, 0, 0.5f);
+		matrixService.translate(viewMatrix, 0, 0, 0.25f);
 	}
 
 	@Override
 	public void moveBackwards() {
-		//matrixService.translate(modelMatrix, 0, 0, -0.5f);
-		//matrixService.translate(normalMatrixOne, 0, 0, -0.5f);
-		matrixService.translate(projectionMatrix, 0, 0, -0.5f);
+		// matrixService.translate(modelMatrix, 0, 0, -0.5f);
+		// matrixService.translate(normalMatrixOne, 0, 0, -0.5f);
+		matrixService.translate(viewMatrix, 0, 0, -0.25f);
 	}
 
 	@Override
 	public void moveLeft() {
-		//matrixService.translate(modelMatrix, 0.5f, 0, 0);
-		//matrixService.translate(normalMatrixOne, 0.5f, 0, 0);
-		matrixService.translate(projectionMatrix, 0.5f, 0, 0);
+		// matrixService.translate(modelMatrix, 0.5f, 0, 0);
+		// matrixService.translate(normalMatrixOne, 0.5f, 0, 0);
+		matrixService.translate(viewMatrix, 0.25f, 0, 0);
 	}
 
 	@Override
 	public void moveRight() {
-		//matrixService.translate(modelMatrix, -0.5f, 0, 0);
-		//matrixService.translate(normalMatrixOne, -0.5f, 0, 0);
-		matrixService.translate(projectionMatrix, -0.5f, 0, 0);
+		// matrixService.translate(modelMatrix, -0.5f, 0, 0);
+		// matrixService.translate(normalMatrixOne, -0.5f, 0, 0);
+		matrixService.translate(viewMatrix, -0.25f, 0, 0);
 	}
-
-
 
 	@Override
 	public void incAltitude() {
-		matrixService.translate(projectionMatrix, 0, -0.5f, 0);
-		
+		matrixService.translate(viewMatrix, 0, -0.25f, 0);
+
 	}
-
-
 
 	@Override
 	public void decAltitude() {
-		matrixService.translate(projectionMatrix, 0, 0.5f, 0);
-		
+		matrixService.translate(viewMatrix, 0, 0.25f, 0);
+
 	}
 
 }

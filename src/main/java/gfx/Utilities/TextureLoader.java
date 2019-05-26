@@ -57,7 +57,7 @@ public class TextureLoader {
 
 	}
 
-	public Texture LoadTexture(String textureFileName) {
+	public Texture loadTexture(String textureFileName) {
 		Texture tex = null;
 		try {
 			InputStream iS = accessFile("/Textures/" + textureFileName);

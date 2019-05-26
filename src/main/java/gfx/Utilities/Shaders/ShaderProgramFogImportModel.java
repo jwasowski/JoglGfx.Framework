@@ -7,6 +7,7 @@ import com.jogamp.opengl.util.glsl.ShaderProgram;
 import com.jogamp.opengl.util.glsl.ShaderState;
 
 import graphicslib3D.Material;
+import graphicslib3D.light.DistantLight;
 import graphicslib3D.light.PositionalLight;
 
 public class ShaderProgramFogImportModel {
@@ -31,15 +32,20 @@ public class ShaderProgramFogImportModel {
 	private int lightPositionLocation;
 	private int lightAttenuationLocation;
 	public int[] lightLocations;
-	public int[] mistLocation;
 	public int mistColorLocation;
 	public int mistStartLocation;
 	public int mistEndLocation;
 	public int mistDensityLocation;
 	public int mistTypeLocation;
+	public int mistTextureUnitLocation;
+	public int[] mistLocations;
+	public int dirLightDirectionLocation;
+	public int dirLightAmbientLocation;
+	public int dirLightDiffuse;
+	public int dirLightSpecular;
+	public int[] dirLightLocations;
 
 	public int initProgram(GL4 gl4) {
-		// TODO ShaderState is possible solution for managing uniforms and attribs
 
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders/Fog", null,
 				"FogPointLightVertex", null, null, true);
@@ -103,8 +109,15 @@ public class ShaderProgramFogImportModel {
 		mistEndLocation = getUniformLocation("mist.end", gl4);
 		mistDensityLocation = getUniformLocation("mist.density", gl4);
 		mistTypeLocation = getUniformLocation("mist.type", gl4);
-		mistLocation = new int[] { mistColorLocation, mistStartLocation, mistEndLocation, mistDensityLocation,
+		mistLocations = new int[] { mistColorLocation, mistStartLocation, mistEndLocation, mistDensityLocation,
 				mistTypeLocation };
+		// mistTextureUnitLocation = getUniformLocation("cloud_texture_unit", gl4);
+		dirLightDirectionLocation = getUniformLocation("dirLight.direction", gl4);
+		dirLightAmbientLocation = getUniformLocation("dirLight.ambient", gl4);
+		dirLightDiffuse = getUniformLocation("dirLight.diffuse", gl4);
+		dirLightSpecular = getUniformLocation("dirLight.specular", gl4);
+		dirLightLocations = new int[] { dirLightDirectionLocation, dirLightAmbientLocation, dirLightDiffuse,
+				dirLightSpecular };
 		System.out.println("ProjectionLoc: " + projectionMatrixLocation + " ViewLoc: " + viewMatrixLocation
 				+ " TextureLoc: " + textureUnitLocation);
 	}
@@ -116,19 +129,18 @@ public class ShaderProgramFogImportModel {
 	// TODO Create abstraction of mist
 	public void setMist(GL4 gl4, float[] mist, int program) {
 		gl4.glUseProgram(program);
-		gl4.glUniform4fv(mistLocation[0], 1, new float[] { mist[0], mist[1], mist[2], mist[3] }, 0);
-		gl4.glUniform1f(mistLocation[1], mist[4]);
-		gl4.glUniform1f(mistLocation[2], mist[5]);
-		gl4.glUniform1f(mistLocation[3], mist[6]);
+		gl4.glUniform4fv(mistLocations[0], 1, new float[] { mist[0], mist[1], mist[2], mist[3] }, 0);
+		gl4.glUniform1f(mistLocations[1], mist[4]);
+		gl4.glUniform1f(mistLocations[2], mist[5]);
+		gl4.glUniform1f(mistLocations[3], mist[6]);
 		if (gl4.glGetError() != 0) {
 			System.err.println("Error code in SetMist: " + gl4.glGetError());
 		}
 	}
 
-	// TODO Check whether it is needed to implement enums / constants
 	public void setMistType(GL4 gl4, int type, int program) {
 		gl4.glUseProgram(program);
-		gl4.glUniform1i(mistLocation[4], type);
+		gl4.glUniform1i(mistLocations[4], type);
 		if (gl4.glGetError() != 0) {
 			System.err.println("Error code in SetMist: " + gl4.glGetError());
 		}
@@ -140,6 +152,17 @@ public class ShaderProgramFogImportModel {
 			System.err.println("Error code in setTextUnit-1: " + gl4.glGetError());
 		}
 		gl4.glUniform1i(textureUnitLocation, t);
+		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
+			System.err.println("Error code in setTextUnit-2: " + gl4.glGetError());
+		}
+	}
+
+	public void setMistTextureUnit(GL4 gl4, int t) {
+		gl4.glUseProgram(program.program());
+		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
+			System.err.println("Error code in setTextUnit-1: " + gl4.glGetError());
+		}
+		gl4.glUniform1i(mistTextureUnitLocation, t);
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in setTextUnit-2: " + gl4.glGetError());
 		}
@@ -183,6 +206,28 @@ public class ShaderProgramFogImportModel {
 				new float[] { light.getConstantAtt(), light.getLinearAtt(), light.getQuadraticAtt() }));
 		if (gl4.glGetError() != 0) {
 			System.err.println("Error code in SetLight: " + gl4.glGetError());
+		}
+	}
+
+	public void setDirLight(GL4 gl4, DistantLight light, int program) {
+		gl4.glUseProgram(program);
+		gl4.glUniform4fv(dirLightLocations[0], 1,
+				GLBuffers.newDirectFloatBuffer(new float[] { (float) light.getDirection().getX(),
+						(float) light.getDirection().getY(), (float) light.getDirection().getZ() }));
+		gl4.glUniform4fv(dirLightLocations[1], 1, GLBuffers.newDirectFloatBuffer(light.getAmbient()));
+		gl4.glUniform4fv(dirLightLocations[2], 1, GLBuffers.newDirectFloatBuffer(light.getDiffuse()));
+		// TODO Increase performance of handling points data
+		gl4.glUniform4fv(dirLightLocations[3], 1, GLBuffers.newDirectFloatBuffer(light.getSpecular()));
+		if (gl4.glGetError() != 0) {
+			System.err.println("Error code in SetDirLight: " + gl4.glGetError());
+		}
+	}
+	
+	public void setDirLightAmbient(GL4 gl4, float[] ambient, int program) {
+		gl4.glUseProgram(program);
+		gl4.glUniform4fv(dirLightLocations[1], 1, GLBuffers.newDirectFloatBuffer(ambient));
+		if (gl4.glGetError() != 0) {
+			System.err.println("Error code in SetDirLightAmbient: " + gl4.glGetError());
 		}
 	}
 

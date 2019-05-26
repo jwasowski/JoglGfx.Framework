@@ -23,6 +23,7 @@ out struct Vertex {
     vec3  normal;
     vec3  light_dir;
     vec3  view_dir;
+    vec4 camera_pos;
     float light_dist;
     float camera_dist;
 } frag_vertex;
@@ -34,12 +35,12 @@ void main(void){
    
     frag_vertex.normal= normal_matrix * in_normal;
 
-    vec4 camera = -view_matrix*vec4(0.0, 0.0, 0.0, 1);
+    frag_vertex.camera_pos = -view_matrix*vec4(0.0, 0.0, 0.0, 1);
     
-    frag_vertex.view_dir = camera.xyz-vertex.xyz;
+    frag_vertex.view_dir = frag_vertex.camera_pos.xyz-vertex.xyz;
     
     frag_vertex.light_dist = distance(light.position, vertex);
-    frag_vertex.camera_dist = distance(camera, vertex);
+    frag_vertex.camera_dist = distance(frag_vertex.camera_pos, vertex);
 
     gl_Position = (projection_matrix * view_matrix) * vertex;
     

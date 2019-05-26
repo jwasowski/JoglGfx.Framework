@@ -227,7 +227,7 @@ public class ModelImporter {
 	public void loadTextures(TextureLoader textureLoader, ModelPart modelPart, ModelMaterialLibrary materialsLib) {
 		String textureName = materialsLib.findTextureName(modelPart.materialName);
 		if (!textureName.equals("") && !textureName.equals(".")) {
-			Texture texture = textureLoader.LoadTexture(textureName);
+			Texture texture = textureLoader.loadTexture(textureName);
 			modelPart.textureId = texture.getTextureObject();
 		}
 	}

@@ -110,7 +110,6 @@ public class FogSkybox implements GfxObjectInterface {
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		DeallocationHelper deallocator = new DeallocationHelper();
 		gl4.glDisableVertexAttribArray(0);
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
@@ -146,8 +145,8 @@ public class FogSkybox implements GfxObjectInterface {
 
 		gl4.glDepthMask(false);
 		gl4.glDrawElements(GL4.GL_TRIANGLES, indices.length, GL4.GL_UNSIGNED_INT, 0);
-		gl4.glDepthMask(true);
-
+		gl4.glDepthMask(true);	
+		
 		gl4.glDisable(GL4.GL_CULL_FACE);
 
 		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);

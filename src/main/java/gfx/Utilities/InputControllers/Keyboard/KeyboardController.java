@@ -12,10 +12,10 @@ import gfx.Display.WindowBezierPatch;
 import gfx.Display.WindowModelImport;
 import gfx.Scene.Objects.BezierPatch;
 import gfx.Scene.Objects.GfxObjectInterface;
+
 /** Keyboard input controller class. */
 public class KeyboardController implements KeyListener {
 
-	
 	private Set<KeyEvent> keySet = ConcurrentHashMap.newKeySet();
 	private GfxObjectInterface gfxObjectInterface;
 	private DisplayInterface display;
@@ -97,11 +97,11 @@ public class KeyboardController implements KeyListener {
 	public void moveRight() {
 		gfxObjectInterface.moveRight();
 	}
-	
+
 	public void incAltitude() {
 		gfxObjectInterface.incAltitude();
 	}
-	
+
 	public void decAltitude() {
 		gfxObjectInterface.decAltitude();
 	}
@@ -118,19 +118,25 @@ public class KeyboardController implements KeyListener {
 		}
 		// Fog linear
 		if (e.getKeyCode() == KeyEvent.VK_F2) {
-			display.setMistType(0);
+			//display.setMistType(0);
+			System.err.println("This Fog equation is turned of for this build.");
 		}
 		// Low intensity fog
 		if (e.getKeyCode() == KeyEvent.VK_F3) {
-			display.setMistType(1);
+			//display.setMistType(1);
+			System.err.println("This Fog equation is turned of for this build.");
 		}
 		// High intensity fog
 		if (e.getKeyCode() == KeyEvent.VK_F4) {
-			display.setMistType(2);
+			//display.setMistType(2);
+			System.err.println("This Fog equation is turned of for this build.");
+		}
+		// Custom fog
+		if (e.getKeyCode() == KeyEvent.VK_F5) {
+			display.setMistType(4);
 		}
 		// Rotate around Y axis
 		if (e.getKeyCode() == KeyEvent.VK_LEFT && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
-			
 
 			keySet.add(e);
 
@@ -177,13 +183,13 @@ public class KeyboardController implements KeyListener {
 			keySet.add(e);
 
 		}
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_Q && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 
 			keySet.add(e);
 
 		}
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_E && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 
 			keySet.add(e);
@@ -201,8 +207,6 @@ public class KeyboardController implements KeyListener {
 				}
 			}
 
-			
-
 		}
 
 		// Rotate around Y axis
@@ -212,7 +216,6 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
 
 		}
 		// Rotate around X axis
@@ -222,7 +225,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 		// Rotate around X axis
 		if (e.getKeyCode() == KeyEvent.VK_DOWN && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
@@ -231,7 +234,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 		// Move forward
 		if (e.getKeyCode() == KeyEvent.VK_W && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
@@ -240,7 +243,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 		// Move backwards
 		if (e.getKeyCode() == KeyEvent.VK_S && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
@@ -249,7 +252,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 
 		// Move left
@@ -259,7 +262,7 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 		// Move right
 		if (e.getKeyCode() == KeyEvent.VK_D && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
@@ -268,25 +271,25 @@ public class KeyboardController implements KeyListener {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_Q && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 			for (KeyEvent keyEvent : keySet) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_Q) {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
-		
+
 		if (e.getKeyCode() == KeyEvent.VK_E && 0 == (InputEvent.AUTOREPEAT_MASK & e.getModifiers())) {
 			for (KeyEvent keyEvent : keySet) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_E) {
 					keySet.remove(keyEvent);
 				}
 			}
-			
+
 		}
 	}
 }

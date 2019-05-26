@@ -82,6 +82,7 @@ public class ShaderProgramFogSkybox {
 			System.err.println("Error code in setTextUnit-2: " + gl4.glGetError());
 		}
 	}
+	
 	//TODO Create abstraction of mist
 	public void setMist(GL4 gl4, float[] mist, int program) {
 		gl4.glUseProgram(program);

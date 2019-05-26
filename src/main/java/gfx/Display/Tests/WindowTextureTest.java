@@ -77,13 +77,13 @@ public class WindowTextureTest implements GLEventListener {
 		final GL4 gl4 = drawable.getGL().getGL4();
 
 		programId = program.initProgram(gl4);
-		testTexture = textureLoader.LoadTexture("ziemia.tga");
+		testTexture = textureLoader.loadTexture("ziemia.tga");
 		testTextureId = testTexture.getTextureObject();
-		testTextureTwo = textureLoader.LoadTexture("merkury.tga");
+		testTextureTwo = textureLoader.loadTexture("merkury.tga");
 		testTextureTwoId = testTextureTwo.getTextureObject();
-		testTextureThree = textureLoader.LoadTexture("ksiezyc.tga");
+		testTextureThree = textureLoader.loadTexture("ksiezyc.tga");
 		testTextureThreeId = testTextureThree.getTextureObject();
-		testTextureJPG = textureLoader.LoadTexture("mars_1k_color.jpg");
+		testTextureJPG = textureLoader.loadTexture("mars_1k_color.jpg");
 		testTextureJPGId = testTextureJPG.getTextureObject();
 		
 		matrixService.setupUnitMatrix(modelMatrix);

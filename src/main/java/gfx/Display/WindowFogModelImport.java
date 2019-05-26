@@ -21,6 +21,8 @@ import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
+import graphicslib3D.Vector3D;
+import graphicslib3D.light.DistantLight;
 import graphicslib3D.light.PositionalLight;
 
 public class WindowFogModelImport implements GLEventListener, DisplayInterface {
@@ -34,15 +36,18 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private FogSkybox skybox = new FogSkybox();
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
+	private DistantLight dirLight = new DistantLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
 	private MouseController mouseController = new MouseController(this, matrixService);
-
-	private float[] pLocationRaw = new float[16];
+	private float timer;
+	private int timerFactor = 30;
 	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
-	private float[] mist = { 0.3f, 0.3f, 0.3f, 1.0f, 3.0f, 60.0f, 0.05f };
-	private int programId, skyboxProgramId, mistType = 3;
+	private float[] mist = { 0.2f, 0.2f, 0.2f, 1.0f, 1.0f, 60.0f, 0.10f };
+	private float[] highAmbientLightning = { 1.0f, 1.0f, 1.0f, 1.0f };
+	private float[] lowAmbientLightning = { 0.1f, 0.1f, 0.1f, 1.0f };
+	private int programId, skyboxProgramId, mistType = 4;
 	private Material material;
 
 	public WindowFogModelImport(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
@@ -73,16 +78,20 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
-		matrixService.setupUnitMatrix(pLocationRaw);
-		matrixService.translate(pLocationRaw, 0.0f, 1.5f, 4.0f);
-		pLocation = new Point3D(pLocationRaw[0], pLocationRaw[5], pLocationRaw[10], pLocationRaw[15]);
+		pLocation = new Point3D(-4.8f, 5.0f, -4.0f, 1.0f);
 		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
 		light.setDiffuse(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setSpecular(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setConstantAtt(0.5f);
-		light.setLinearAtt(0.005f);
+		light.setLinearAtt(0.05f);
 		light.setQuadraticAtt(0.0125f);
+
+		pLocation = new Point3D(1f, 1f, -1.0f, 1.0f);
+		dirLight.setDirection(new Vector3D(pLocation));
+		dirLight.setAmbient(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
+		dirLight.setDiffuse(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+		dirLight.setSpecular(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		material = new Material();
 		material.setAmbient(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
@@ -94,15 +103,16 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		programId = program.initProgram(gl4);
 		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
+		program.setDirLight(gl4, dirLight, programId);
 		program.setMist(gl4, mist, programId);
 		program.setMistType(gl4, mistType, programId);
 
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
-		matrixService.translate(viewMatrix, 0, -4, -10);
-		matrixService.rotateAboutXAxis(viewMatrix, 15);
-		System.out.println("ViewMatrix: "+Arrays.toString(viewMatrix));
-		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 250.0f);
+		matrixService.translate(viewMatrix, 0, -2, -10);
+		// matrixService.rotateAboutXAxis(viewMatrix, 15);
+		System.out.println("ViewMatrix: " + Arrays.toString(viewMatrix));
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setTextureUnit(gl4, 0);
@@ -122,7 +132,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 
 		skybox.setProgram(skyboxProgram);
 		skybox.init(drawable);
-
+		timer = (float) (Math.random() * timerFactor);
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
 		gl4.glClearColor(0.8f, 0.9f, 1.0f, 1.0f);
@@ -139,18 +149,13 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		keyboardController.controlKeyboard();
-		
-		/*
-		 * matrixService.rotateAboutYAxis(pLocationRaw, 0.15f);
-		 * pLocation.setX(pLocationRaw[0]); pLocation.setY(pLocationRaw[5]);
-		 * pLocation.setZ(pLocationRaw[10]); light.setPosition(new
-		 * Point3D(pLocationRaw)); program.setLight(gl4, light, programId);
-		 */
+
 		importedModel.viewMatrix = viewMatrix;
 		importedModel.projectionMatrix = projectionMatrix;
 		program.useProgram(gl4, state);
 		projectionMatrix = importedModel.projectionMatrix;
 		viewMatrix = importedModel.viewMatrix;
+		timerController(gl4, timer);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setMistType(gl4, mistType, programId);
@@ -162,11 +167,21 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		skyboxProgram.setMistType(gl4, mistType, skyboxProgramId);
 		skybox.display(drawable);
 	}
+	
+	private void timerController(GL4 gl4,float timer) {
+		if (timer <= 1.0f) {
+			program.setDirLightAmbient(gl4, highAmbientLightning, programId);
+			this.timer = (float) (Math.random() * timerFactor);
+		} else {
+			program.setDirLightAmbient(gl4, lowAmbientLightning, programId);
+		}
+		this.timer = this.timer - 0.2f;
+	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 250.0f);
+		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		gl4.glViewport(0, 0, width, height);
 
@@ -190,36 +205,34 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 			}
 		}.start();
 	}
-	
-	
+
 	@Override
 	public void setMistType(int type) {
 		mistType = type;
 	}
 
-
 	@Override
 	public float[] getLocalModelMatrix() {
-		
+
 		return importedModel.modelMatrix;
 	}
 
 	@Override
 	public void setLocalModelMatrix(float[] modelMatrix) {
-		
+
 		this.importedModel.modelMatrix = modelMatrix;
 	}
 
 	@Override
 	public float[] getViewMatrix() {
-		
+
 		return viewMatrix;
 	}
 
 	@Override
 	public void setViewMatrix(float[] viewMatrix) {
 		this.viewMatrix = viewMatrix;
-		
+
 	}
 
 	@Override
@@ -231,7 +244,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	@Override
 	public void setProjectionMatrix(float[] projectionMatrix) {
 		this.projectionMatrix = projectionMatrix;
-		
+
 	}
 
 }
