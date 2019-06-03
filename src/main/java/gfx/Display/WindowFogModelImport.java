@@ -14,11 +14,13 @@ import com.jogamp.opengl.util.glsl.ShaderState;
 
 import gfx.Scene.Objects.FogImportedModel;
 import gfx.Scene.Objects.FogSkybox;
+import gfx.Scene.Objects.TransparentCone;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
 import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
+import gfx.Utilities.Shaders.ShaderProgramTransparent;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
 import graphicslib3D.Vector3D;
@@ -32,7 +34,9 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	public ShaderState state = new ShaderState();
 	private ShaderProgramFogImportModel program = new ShaderProgramFogImportModel();
 	private ShaderProgramFogSkybox skyboxProgram = new ShaderProgramFogSkybox();
+	private ShaderProgramTransparent transparentProgram = new ShaderProgramTransparent();
 	private FogImportedModel importedModel = new FogImportedModel();
+	private TransparentCone transCone = new TransparentCone();
 	private FogSkybox skybox = new FogSkybox();
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
@@ -47,8 +51,9 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private float[] mist = { 0.2f, 0.2f, 0.2f, 1.0f, 1.0f, 60.0f, 0.10f };
 	private float[] highAmbientLightning = { 1.0f, 1.0f, 1.0f, 1.0f };
 	private float[] lowAmbientLightning = { 0.1f, 0.1f, 0.1f, 1.0f };
-	private int programId, skyboxProgramId, mistType = 4;
+	private int programId, skyboxProgramId,transparentProgramId, mistType = 4;
 	private Material material;
+	private float[] coneColor;
 
 	public WindowFogModelImport(GLWindow windowPassed, FPSAnimator animatorPassed, int width, int height, String name) {
 		this.window = windowPassed;
@@ -99,7 +104,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		material.setSpecular(new float[] { 0.323789f, 0.323789f, 0.323789f, 1.0f });
 		material.setEmission(new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 		material.setShininess(96.078431f);
-
+		
 		programId = program.initProgram(gl4);
 		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
@@ -121,6 +126,17 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		importedModel.setProgram(program);
 		importedModel.material = material;
 		importedModel.init(drawable);
+		
+		transparentProgramId = transparentProgram.initProgram(gl4);
+		transparentProgram.useProgram(gl4, state);
+		transparentProgram.setProjectionMatrix(gl4, projectionMatrix, transparentProgramId);
+		transparentProgram.setViewMatrix(gl4, viewMatrix, transparentProgramId);
+		coneColor = new float[] {0.5f, 0.5f, 0.5f, 0.3f};
+		transparentProgram.setColor(gl4, coneColor, transparentProgramId);
+		transCone.material = coneColor;
+		transCone.setProgram(transparentProgram);
+		
+		transCone.init(drawable);
 
 		skyboxProgramId = skyboxProgram.initProgram(gl4);
 		skyboxProgram.useProgram(gl4, state);
@@ -132,6 +148,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 
 		skybox.setProgram(skyboxProgram);
 		skybox.init(drawable);
+		
 		timer = (float) (Math.random() * timerFactor);
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
 		gl4.glDepthFunc(GL4.GL_LESS);
@@ -155,7 +172,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		program.useProgram(gl4, state);
 		projectionMatrix = importedModel.projectionMatrix;
 		viewMatrix = importedModel.viewMatrix;
-		timerController(gl4, timer);
+		timerController(gl4);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		program.setMistType(gl4, mistType, programId);
@@ -166,16 +183,23 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
 		skyboxProgram.setMistType(gl4, mistType, skyboxProgramId);
 		skybox.display(drawable);
+		
+		transparentProgram.useProgram(gl4, state);
+		transparentProgram.setProjectionMatrix(gl4, projectionMatrix, transparentProgramId);
+		transparentProgram.setViewMatrix(gl4, viewMatrix, transparentProgramId);
+		transparentProgram.setColor(gl4, coneColor, transparentProgramId);
+		transCone.display(drawable);
+		
 	}
 	
-	private void timerController(GL4 gl4,float timer) {
+	private void timerController(GL4 gl4) {
 		if (timer <= 1.0f) {
 			program.setDirLightAmbient(gl4, highAmbientLightning, programId);
-			this.timer = (float) (Math.random() * timerFactor);
+			timer = (float) (Math.random() * timerFactor);
 		} else {
 			program.setDirLightAmbient(gl4, lowAmbientLightning, programId);
 		}
-		this.timer = this.timer - 0.2f;
+		timer = timer - 0.2f;
 	}
 
 	@Override

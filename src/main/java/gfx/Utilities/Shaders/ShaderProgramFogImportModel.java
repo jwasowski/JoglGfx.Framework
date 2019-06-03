@@ -123,7 +123,7 @@ public class ShaderProgramFogImportModel {
 	}
 
 	public int getProgramId() {
-		return program.id();
+		return program.program();
 	}
 
 	// TODO Create abstraction of mist

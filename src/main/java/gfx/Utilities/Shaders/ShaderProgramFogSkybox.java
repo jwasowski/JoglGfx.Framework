@@ -69,7 +69,7 @@ public class ShaderProgramFogSkybox {
 	}
 	
 	public int getProgramId(){
-		return program.id();
+		return program.program();
 	}
 
 	public void setTextureUnit(GL4 gl4, int t) {

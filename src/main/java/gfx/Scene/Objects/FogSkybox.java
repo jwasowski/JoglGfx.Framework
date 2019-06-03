@@ -103,7 +103,7 @@ public class FogSkybox implements GfxObjectInterface {
 				GL4.GL_STATIC_DRAW);
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		gl4.glBindVertexArray(0);
-		// TODO Load cube texture with special parameters
+		
 
 	}
 
