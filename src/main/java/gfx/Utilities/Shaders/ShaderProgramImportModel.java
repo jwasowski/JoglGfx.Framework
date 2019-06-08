@@ -33,10 +33,6 @@ public class ShaderProgramImportModel {
 	public int[] lightLocations;
 
 	public int initProgram(GL4 gl4) {
-		//TODO ShaderState is possible solution for managing uniforms and attribs
-		
-		
-		
 		vertexShader = ShaderCode.create(gl4, GL4.GL_VERTEX_SHADER, this.getClass(), "Shaders/ImportModel", null,
 				"PointLightvertex", null, null, true);
 

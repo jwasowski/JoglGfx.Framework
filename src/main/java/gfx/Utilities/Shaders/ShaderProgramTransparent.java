@@ -97,4 +97,10 @@ public class ShaderProgramTransparent {
 			System.err.println("Error code in SetColor: " + gl4.glGetError());
 		}
 	}
+	
+	public void disposeProgram(GL4 gl4) {
+		program.destroy(gl4);
+		// Just to be sure
+		program = null;
+	}
 }

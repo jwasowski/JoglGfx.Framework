@@ -19,7 +19,6 @@ import gfx.Utilities.Shaders.ShaderProgramTransparent;
 
 public class TransparentCone implements GfxObjectInterface {
 	public float[] modelMatrix = new float[16];
-	//public float[] normalMatrix = new float[9];
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
 	protected final int[] indexBufferObject = new int[1];
@@ -30,9 +29,9 @@ public class TransparentCone implements GfxObjectInterface {
 	private FloatBuffer vertexBuffer;
 	private IntBuffer indicesBuffer;
 
-	private float height = 20.0f, radius = 0.7f;
+	private float height = 18.0f, radius = 1f;
 	private int n = 32;
-
+	
 	public void setProgram(ShaderProgramTransparent program) {
 		this.program = program;
 	}
@@ -42,28 +41,27 @@ public class TransparentCone implements GfxObjectInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		matrixService.setupUnitMatrix(modelMatrix);
 		matrixService.translate(modelMatrix, -5.35f, 4.8f, -3.8f);
-		matrixService.rotateAboutXAxis(modelMatrix, -90);
-		
+		matrixService.rotateAboutXAxis(modelMatrix, 90f);
 		
 		// Voa Setup
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		// Cone Data Setup
-		//TODO Invert cone
 		List<Float> coneData = new ArrayList<>();
 		coneData.add(0.0f);
-		coneData.add(height);
+		coneData.add(0f);
 		coneData.add(0.0f);
 		coneData.add(1.0f);
 		for (int i = 0; i <= n; i++) {
 			float phi = (float) ((2 * Math.PI) * i / n);
 			coneData.add((float) (radius * Math.sin(phi)));
-			coneData.add(0.0f);
+			coneData.add(height);
 			coneData.add((float) (radius * Math.cos(phi)));
 			coneData.add(1.0f);
 		}
+		
 		float[] coneRawData = ArrayUtils.toPrimitive(coneData.toArray(new Float[0]), 0.0f);
-		//ArrayUtils.reverse(coneRawData);
+		
 		vertexBuffer = GLBuffers.newDirectFloatBuffer(coneRawData);
 		coneData.clear();
 
@@ -85,6 +83,7 @@ public class TransparentCone implements GfxObjectInterface {
 		}
 		indicesData.add(1);
 		int[] indicesRawData = ArrayUtils.toPrimitive(indicesData.toArray(new Integer[0]), 0);
+		indicesData.clear();
 		gl4.glGenBuffers(indexBufferObject.length, indexBufferObject, 0);
 		gl4.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, indexBufferObject[0]);
 		indicesBuffer = GLBuffers.newDirectIntBuffer(indicesRawData);
@@ -98,7 +97,24 @@ public class TransparentCone implements GfxObjectInterface {
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
+		final GL4 gl4 = drawable.getGL().getGL4();
+		gl4.glDisableVertexAttribArray(0);
+		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
+		if ("8".equals(System.getProperty("java.version").substring(2, 3))
+				|| "9".equals(System.getProperty("java.version"))) {
+			deallocator.deallocate(vertexBuffer);
+			deallocator.deallocate(indicesBuffer);
+		} else {
+			System.err.println(
+					"Java version: " + System.getProperty("java.version") + " is not supported by buffer deallocator.");
+		}
+		gl4.glBindVertexArray(0);
+		gl4.glDeleteVertexArrays(1, vertexArrayObject, 0);
+
+		if (program.getProgramId() != 0) {
+			program.disposeProgram(gl4);
+
+		}
 
 	}
 
@@ -107,9 +123,7 @@ public class TransparentCone implements GfxObjectInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 
 		gl4.glBindVertexArray(vertexArrayObject[0]);
-		//matrixService.translate(modelMatrix, 0f, 0f, 40f);
 		matrixService.rotateAboutZAxis(modelMatrix, 1);
-		//matrixService.translate(modelMatrix, 0f, 0f, -40f);
 		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
 		program.setColor(gl4, material, program.getProgramId());
 
@@ -122,7 +136,6 @@ public class TransparentCone implements GfxObjectInterface {
 		gl4.glDepthMask(false);
 
 		gl4.glDrawElements(GL4.GL_TRIANGLE_FAN, n+2, GL4.GL_UNSIGNED_INT, 0);
-
 		gl4.glDisable(GL4.GL_CULL_FACE);
 		gl4.glDisable(GL4.GL_BLEND);
 		gl4.glDepthMask(true);

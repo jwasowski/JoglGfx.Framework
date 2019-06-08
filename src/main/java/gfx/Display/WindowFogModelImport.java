@@ -159,6 +159,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	public void dispose(GLAutoDrawable drawable) {
 		importedModel.dispose(drawable);
 		skybox.dispose(drawable);
+		transCone.dispose(drawable);
 	}
 
 	@Override

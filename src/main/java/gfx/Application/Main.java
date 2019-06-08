@@ -30,7 +30,7 @@ public class Main {
 		//WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
 		//WindowTextureTest textureTest = new WindowTextureTest(window, animator, width, height, "Texturing test");
 		//WindowSkyboxTest skyboxTest = new WindowSkyboxTest(window, animator, width, height, "Skybox test");
-		WindowFogModelImport fogModelImport = new WindowFogModelImport(window, animator, width, height, "Model Import test with fog");
+		WindowFogModelImport fogModelImport = new WindowFogModelImport(window, animator, width, height, "Imported model");
 	}
 
 }
