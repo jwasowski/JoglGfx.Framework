@@ -10,6 +10,7 @@ import gfx.Display.WindowBezierPatch;
 import gfx.Display.WindowFogModelImport;
 import gfx.Display.WindowModelImport;
 import gfx.Display.Tests.WindowSkyboxTest;
+import gfx.Display.Tests.WindowSolarSystemTest;
 import gfx.Display.Tests.WindowTextureTest;
 
 public class Main {
@@ -30,7 +31,8 @@ public class Main {
 		//WindowModelImport modelImport = new WindowModelImport(window, animator, width, height, "Model Import test");
 		//WindowTextureTest textureTest = new WindowTextureTest(window, animator, width, height, "Texturing test");
 		//WindowSkyboxTest skyboxTest = new WindowSkyboxTest(window, animator, width, height, "Skybox test");
-		WindowFogModelImport fogModelImport = new WindowFogModelImport(window, animator, width, height, "Imported model");
+		//WindowFogModelImport fogModelImport = new WindowFogModelImport(window, animator, width, height, "Imported model");
+		WindowSolarSystemTest solarTest = new WindowSolarSystemTest(window, animator, width, height, "Solar system test");
 	}
 
 }

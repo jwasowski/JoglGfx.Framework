@@ -30,10 +30,10 @@ public class ShaderProgramCombined {
 		projectionMatrixLocation = getUniformLocation("projectionMatrix", gl4);
 		return program.program();
 	}
-	//TODO Check behaviour with program.program()
+	
 	public int getUniformLocation(String name, GL4 gl4) {
 		int location = -1;
-		location = gl4.glGetUniformLocation(program.id(), name);
+		location = gl4.glGetUniformLocation(program.program(), name);
 		if (location < 0) {
 			System.err.println("ERROR: Cannot find uniform location: " + name);
 		}
@@ -41,11 +41,11 @@ public class ShaderProgramCombined {
 	}
 	
 	public int getProgramId(){
-		return program.id();
+		return program.program();
 	}
-	//TODO Check behaviour with program.program()
+	
 	public void setTextureUnit(GL4 gl4, int t) {
-		gl4.glUseProgram(program.id());
+		gl4.glUseProgram(program.program());
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in setTextUnit-1: " + gl4.glGetError());
 		}

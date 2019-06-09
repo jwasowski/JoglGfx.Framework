@@ -32,7 +32,7 @@ public class ImportedModel implements GfxObjectInterface {
 	public Material material;
 	ModelImporter modelImporter = new ModelImporter();
 	// TODO create constructor with model name param pointing at file
-	public Model model = new Model("krajobraz.obj");
+	public Model model;
 	//public Model model = new Model("WomanAnimTest2.obj");
 	public ModelMaterialLibrary materialLib = new ModelMaterialLibrary();
 
@@ -41,7 +41,10 @@ public class ImportedModel implements GfxObjectInterface {
 	public void setProgram(ShaderProgramImportModel program) {
 		this.program = program;
 	}
-
+	
+	public ImportedModel(String modelName) {
+		model = new Model(modelName);
+	}
 	
 
 	/*

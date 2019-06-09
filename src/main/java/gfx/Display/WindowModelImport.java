@@ -1,5 +1,7 @@
 package gfx.Display;
 
+import java.util.Arrays;
+
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -28,8 +30,9 @@ public class WindowModelImport implements GLEventListener, DisplayInterface {
 	public ShaderState state = new ShaderState();
 	private ShaderProgramImportModel program = new ShaderProgramImportModel();
 	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
-	private ImportedModel importedModel = new ImportedModel();
-	private Skybox skybox = new Skybox();
+	private ImportedModel importedModel = new ImportedModel("krajobraz.obj");
+	private Skybox skybox = new Skybox(Arrays.asList("Skybox/starrynightlf.png", "Skybox/starrynightrt.png", "Skybox/starrynightdn.png",
+			"Skybox/starrynightup.png", "Skybox/starrynightft.png", "Skybox/starrynightbk.png"));
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);

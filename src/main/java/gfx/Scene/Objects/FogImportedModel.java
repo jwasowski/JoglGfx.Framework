@@ -150,7 +150,7 @@ public class FogImportedModel implements GfxObjectInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		gl4.glViewport(x, y, width, height);
 	}
-
+	// TODO Abstract camera movement and rotation in below methods
 	@Override
 	public void rotateXAxisUp() {
 		// matrixService.rotateAboutXAxis(modelMatrix, -0.5f);

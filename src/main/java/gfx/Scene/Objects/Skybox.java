@@ -36,9 +36,13 @@ public class Skybox implements GfxObjectInterface {
 	public List<Texture> textureData = new ArrayList<>();
 	private FloatBuffer textureVertexBuffer;
 	private IntBuffer indicesBuffer;
-
+	private List<String> textureNames;
 	public int skyTextureId;
 
+	public Skybox(List<String> textureNames) {
+		this.textureNames = textureNames;
+	}
+	
 	public void setProgram(ShaderProgramSkybox program) {
 		this.program = program;
 	}
@@ -58,8 +62,7 @@ public class Skybox implements GfxObjectInterface {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		System.out.println("Skybox Initialization");
 		textureData.add(textureLoader.loadCubeTexture(gl4,
-				Arrays.asList("Skybox/starrynightlf.png", "Skybox/starrynightrt.png", "Skybox/starrynightdn.png",
-						"Skybox/starrynightup.png", "Skybox/starrynightft.png", "Skybox/starrynightbk.png"),
+				textureNames,
 				false));
 		skyTextureId = textureData.get(0).getTextureObject();
 		System.out.println("Skybox TextureId: " + skyTextureId);
