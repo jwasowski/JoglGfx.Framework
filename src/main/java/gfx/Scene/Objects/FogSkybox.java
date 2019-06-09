@@ -24,13 +24,10 @@ import gfx.Utilities.Shaders.ShaderProgramSkybox;
 import graphicslib3D.Material;
 
 public class FogSkybox implements GfxObjectInterface {
-	//public float[] modelMatrixOne = new float[16];
-	//public float[] normalMatrixOne = new float[16];
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
 	protected final int[] indexBufferObject = new int[1];
 	public float[] viewMatrix;
-	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
 	private DeallocationHelper deallocator = new DeallocationHelper();
 	protected ShaderProgramFogSkybox program;
@@ -50,15 +47,7 @@ public class FogSkybox implements GfxObjectInterface {
 
 			50.0f, 50.0f, -50.0f, 1.0f, 1.0f, -1.0f, -1.0f, -50.0f, 50.0f, -50.0f, 1.0f, -1.0f, -1.0f, -1.0f, -50.0f,
 			-50.0f, -50.0f, 1.0f, -1.0f, 1.0f, -1.0f, 50.0f, -50.0f, -50.0f, 1.0f, 1.0f, 1.0f, -1.0f };
-	/*
-	 * { -50.0f, 50.0f, 50.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, 50.0f, 50.0f, 1.0f,
-	 * 1.0f, 1.0f, 1.0f, 50.0f, -50.0f, 50.0f, 1.0f, 1.0f, -1.0f, 1.0f, -50.0f,
-	 * -50.0f, 50.0f, 1.0f, -1.0f, -1.0f, 1.0f,
-	 * 
-	 * 50.0f, 50.0f, -50.0f, 1.0f, 1.0f, 1.0f, -1.0f, -50.0f, 50.0f, -50.0f, 1.0f,
-	 * -1.0f, 1.0f, -1.0f, -50.0f, -50.0f, -50.0f, 1.0f, -1.0f, -1.0f, -1.0f, 50.0f,
-	 * -50.0f, -50.0f, 1.0f, 1.0f, -1.0f, -1.0f };
-	 */
+	
 	int[] indices = { 0, 1, 3, 1, 2, 3, 4, 5, 7, 5, 6, 7, 5, 4, 0, 4, 1, 0, 7, 6, 2, 6, 3, 2, 5, 0, 6, 0, 3, 6, 1, 4, 2,
 			4, 7, 2 };
 
@@ -140,7 +129,7 @@ public class FogSkybox implements GfxObjectInterface {
 		gl4.glCullFace(GL4.GL_BACK);
 		gl4.glFrontFace(GL4.GL_CCW);
 
-		gl4.glActiveTexture(GL4.GL_TEXTURE1);
+		gl4.glActiveTexture(GL4.GL_TEXTURE2);
 		gl4.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, skyTextureId);
 
 		gl4.glDepthMask(false);

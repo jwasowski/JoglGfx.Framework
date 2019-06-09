@@ -28,8 +28,9 @@ public class TransparentCone implements GfxObjectInterface {
 	public float[] material;
 	private FloatBuffer vertexBuffer;
 	private IntBuffer indicesBuffer;
-
+	/** Cone parameters. */
 	private float height = 18.0f, radius = 1f;
+	/** Cone circular base precision value. */
 	private int n = 32;
 	
 	public void setProgram(ShaderProgramTransparent program) {

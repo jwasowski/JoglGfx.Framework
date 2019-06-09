@@ -1,0 +1,29 @@
+
+
+layout (location = 0) in vec4 in_position;
+layout (location = 1) in vec4 in_color;
+
+uniform float time;
+uniform mat4 projection_matrix;
+uniform mat4 view_matrix;
+uniform mat4 model_matrix;
+
+flat out vec4 star_color;
+
+void main(void){
+    vec4 vertex =  model_matrix * in_position;
+
+    vertex.z += time;
+    vertex.z = fract(vertex.z);
+    vertex.y -= time;
+    vertex.y = fract(vertex.y);
+
+    float size = (20.0 * vertex.z * vertex.y);
+
+    star_color = smoothstep(1.0, 7.0, size) * in_color;
+
+    vertex.z = (999.9 * vertex.z) - 1000.0;
+    vertex.y = (999.9 * vertex.y) - 1000.0;
+    gl_Position = projection_matrix * view_matrix * vertex;
+    gl_PointSize = size;
+}

@@ -56,7 +56,7 @@ public class TextureLoader {
 		return cubemap;
 
 	}
-
+	//TODO Fix tga format reading
 	public Texture loadTexture(String textureFileName) {
 		Texture tex = null;
 		try {

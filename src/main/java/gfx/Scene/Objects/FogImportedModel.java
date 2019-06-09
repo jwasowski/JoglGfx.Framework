@@ -61,8 +61,7 @@ public class FogImportedModel implements GfxObjectInterface {
 		for (ModelPart modelPart : model.modelParts) {
 			modelImporter.loadTextures(textureLoader, modelPart, materialLib);
 		}
-		textureData.add(textureLoader.loadTexture("cloud.jpg"));
-		cloudTextureId = textureData.get(0).getTextureObject();
+		
 		matrixService.setupUnitMatrix(modelMatrix);
 		matrixService.setupUnitMatrix3x3(normalMatrix);
 

@@ -14,12 +14,14 @@ import com.jogamp.opengl.util.glsl.ShaderState;
 
 import gfx.Scene.Objects.FogImportedModel;
 import gfx.Scene.Objects.FogSkybox;
+import gfx.Scene.Objects.Sprite;
 import gfx.Scene.Objects.TransparentCone;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
 import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramFogImportModel;
 import gfx.Utilities.Shaders.ShaderProgramFogSkybox;
+import gfx.Utilities.Shaders.ShaderProgramSprite;
 import gfx.Utilities.Shaders.ShaderProgramTransparent;
 import graphicslib3D.Material;
 import graphicslib3D.Point3D;
@@ -35,15 +37,17 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private ShaderProgramFogImportModel program = new ShaderProgramFogImportModel();
 	private ShaderProgramFogSkybox skyboxProgram = new ShaderProgramFogSkybox();
 	private ShaderProgramTransparent transparentProgram = new ShaderProgramTransparent();
+	//private ShaderProgramSprite spriteProgram = new ShaderProgramSprite();
 	private FogImportedModel importedModel = new FogImportedModel();
 	private TransparentCone transCone = new TransparentCone();
+	//private Sprite haloSprite = new Sprite();
 	private FogSkybox skybox = new FogSkybox();
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private DistantLight dirLight = new DistantLight();
 	private KeyboardController keyboardController = new KeyboardController(importedModel, this);
 	private MouseController mouseController = new MouseController(this, matrixService);
-	private float timer;
+	private float timer, spriteTimer = 0.0f;
 	private int timerFactor = 30;
 	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
@@ -51,7 +55,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 	private float[] mist = { 0.2f, 0.2f, 0.2f, 1.0f, 1.0f, 60.0f, 0.10f };
 	private float[] highAmbientLightning = { 1.0f, 1.0f, 1.0f, 1.0f };
 	private float[] lowAmbientLightning = { 0.1f, 0.1f, 0.1f, 1.0f };
-	private int programId, skyboxProgramId,transparentProgramId, mistType = 4;
+	private int programId, skyboxProgramId,transparentProgramId, spriteProgramId, mistType = 4;
 	private Material material;
 	private float[] coneColor;
 
@@ -115,7 +119,6 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		matrixService.setupUnitMatrix(projectionMatrix);
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, -2, -10);
-		// matrixService.rotateAboutXAxis(viewMatrix, 15);
 		System.out.println("ViewMatrix: " + Arrays.toString(viewMatrix));
 		projectionMatrix = matrixService.createProjectionMatrix(60, (float) width / (float) height, 0.1f, 100.0f);
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
@@ -131,18 +134,28 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		transparentProgram.useProgram(gl4, state);
 		transparentProgram.setProjectionMatrix(gl4, projectionMatrix, transparentProgramId);
 		transparentProgram.setViewMatrix(gl4, viewMatrix, transparentProgramId);
-		coneColor = new float[] {0.5f, 0.5f, 0.5f, 0.3f};
+		coneColor = new float[] {0.5f, 0.5f, 0.5f, 0.1f};
 		transparentProgram.setColor(gl4, coneColor, transparentProgramId);
 		transCone.material = coneColor;
 		transCone.setProgram(transparentProgram);
 		
 		transCone.init(drawable);
+		
+		/*spriteProgramId = spriteProgram.initProgram(gl4);
+		spriteProgram.useProgram(gl4, state);
+		spriteProgram.setProjectionMatrix(gl4, projectionMatrix, spriteProgramId);
+		spriteProgram.setViewMatrix(gl4, viewMatrix, spriteProgramId);
+		spriteProgram.setTextureUnit(gl4, 1);
+		spriteProgram.setTime(gl4, spriteTimer);
+		haloSprite.setProgram(spriteProgram);
+		
+		haloSprite.init(drawable);*/
 
 		skyboxProgramId = skyboxProgram.initProgram(gl4);
 		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
 		skyboxProgram.setViewMatrix(gl4, viewMatrix, skyboxProgramId);
-		skyboxProgram.setTextureUnit(gl4, 1);
+		skyboxProgram.setTextureUnit(gl4, 2);
 		skyboxProgram.setMist(gl4, mist, skyboxProgramId);
 		skyboxProgram.setMistType(gl4, mistType, skyboxProgramId);
 
@@ -190,6 +203,13 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		transparentProgram.setViewMatrix(gl4, viewMatrix, transparentProgramId);
 		transparentProgram.setColor(gl4, coneColor, transparentProgramId);
 		transCone.display(drawable);
+		
+		/*spriteProgram.useProgram(gl4, state);
+		spriteProgram.setProjectionMatrix(gl4, projectionMatrix, spriteProgramId);
+		spriteProgram.setViewMatrix(gl4, viewMatrix, spriteProgramId);
+		spriteTimer += 0.001f;
+		haloSprite.move(spriteTimer);
+		haloSprite.display(drawable);*/
 		
 	}
 	
