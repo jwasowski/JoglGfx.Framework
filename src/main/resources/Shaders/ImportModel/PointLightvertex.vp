@@ -29,6 +29,7 @@ out struct Vertex {
 
 void main(void){
     vec4 vertex = model_matrix * in_position;
+    //vec4 light_position = view_matrix * light.position;
     frag_vertex.light_dir = (light.position.xyz - vertex.xyz);
    	
     frag_vertex.normal= normal_matrix * in_normal;

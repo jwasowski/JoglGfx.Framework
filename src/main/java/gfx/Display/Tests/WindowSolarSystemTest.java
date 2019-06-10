@@ -32,11 +32,11 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 	private ShaderProgramImportModel program = new ShaderProgramImportModel();
 	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
 	// private ImportedModel importedModel = new ImportedModel();
-	private TexturedSphere mars = new TexturedSphere(20, 30, 2f, 0.75f, "mars_1k_color.jpg", new float[] { 0f, 0f, 9f },
+	private TexturedSphere mars = new TexturedSphere(20, 30, 1f, 0.75f, "mars_1k_color.jpg", new float[] { 0f, 0f, 9f },
 			new float[] { 1f, 1f, 1f }, true);
-	private TexturedSphere moon = new TexturedSphere(20, 30, 2f, 0.75f, "2k_moon.jpg", new float[] { 0f, 0f, 11f },
+	private TexturedSphere moon = new TexturedSphere(20, 30, 0.5f, 0.25f, "2k_moon.jpg", new float[] { 0f, 0f, 11f },
 			new float[] { 0.3f, 0.3f, 0.3f }, true);
-	private TexturedSphere sun = new TexturedSphere(20, 30, 2f, 0.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f },
+	private TexturedSphere sun = new TexturedSphere(30, 40, 5f, 2.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f },
 			new float[] { 3f, 3f, 3f }, false);
 	private Skybox skybox = new Skybox(Arrays.asList("SpaceSkybox/spaceBox_left.png", "SpaceSkybox/spaceBox_right.png",
 			"SpaceSkybox/spaceBox_down.png", "SpaceSkybox/spaceBox_up.png", "SpaceSkybox/spaceBox_front.png",
@@ -81,21 +81,21 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
-		matrixService.setupUnitMatrix(pLocationRaw);
-		matrixService.translate(pLocationRaw, 0.0f, 0f, 0f);
-		pLocation = new Point3D(pLocationRaw[0], pLocationRaw[5], pLocationRaw[10], pLocationRaw[15]);
+		//matrixService.setupUnitMatrix(pLocationRaw);
+		//matrixService.translate(pLocationRaw, 0.0f, 0f, 0f);
+		pLocation = new Point3D(0f, 0f, 0f, 1f);
 		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
 		light.setDiffuse(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setSpecular(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setConstantAtt(0.5f);
 		light.setLinearAtt(0.005f);
-		light.setQuadraticAtt(0.0125f);
+		light.setQuadraticAtt(0.0025f);
 
 		material = new Material();
-		material.setAmbient(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
-		material.setDiffuse(new float[] { 0.8f, 0.007409f, 0.014076f, 1.0f });
-		material.setSpecular(new float[] { 0.323789f, 0.323789f, 0.323789f, 1.0f });
+		material.setAmbient(new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
+		material.setDiffuse(new float[] { 0.5f, 0.207409f, 0.214076f, 1.0f });
+		material.setSpecular(new float[] { 0.223789f, 0.223789f, 0.223789f, 1.0f });
 		material.setEmission(new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 		material.setShininess(96.078431f);
 
@@ -109,8 +109,7 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		programId = program.initProgram(gl4);
 		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
-
-		matrixService.setupUnitMatrix(projectionMatrix);
+		
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -20);
 		matrixService.rotateAboutXAxis(viewMatrix, 15);
@@ -161,21 +160,15 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		gl4.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		keyboardController.controlKeyboard();
 
-		/*
-		 * importedModel.viewMatrix = viewMatrix; program.useProgram(gl4, state);
-		 * program.setProjectionMatrix(gl4, projectionMatrix, programId); viewMatrix =
-		 * importedModel.viewMatrix; program.setViewMatrix(gl4, viewMatrix, programId);
-		 * importedModel.display(drawable);
-		 */
 		program.useProgram(gl4, state);
 		mars.viewMatrix = viewMatrix;
 		program.setProjectionMatrix(gl4, projectionMatrix, programId);
 		viewMatrix = mars.viewMatrix;
 		program.setViewMatrix(gl4, viewMatrix, programId);
-		program.setLight(gl4, light, programId);
+		sun.display(drawable);
 		mars.display(drawable);
 		moon.display(drawable);
-		sun.display(drawable);
+		
 
 		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
