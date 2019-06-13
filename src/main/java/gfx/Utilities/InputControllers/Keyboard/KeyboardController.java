@@ -105,7 +105,7 @@ public class KeyboardController implements KeyListener {
 	public void decAltitude() {
 		gfxObjectInterface.decAltitude();
 	}
-
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 
@@ -118,17 +118,17 @@ public class KeyboardController implements KeyListener {
 		}
 		// Fog linear
 		if (e.getKeyCode() == KeyEvent.VK_F2) {
-			//display.setMistType(0);
+			// display.setMistType(0);
 			System.err.println("This Fog equation is turned of for this build.");
 		}
 		// Low intensity fog
 		if (e.getKeyCode() == KeyEvent.VK_F3) {
-			//display.setMistType(1);
+			// display.setMistType(1);
 			System.err.println("This Fog equation is turned of for this build.");
 		}
 		// High intensity fog
 		if (e.getKeyCode() == KeyEvent.VK_F4) {
-			//display.setMistType(2);
+			// display.setMistType(2);
 			System.err.println("This Fog equation is turned of for this build.");
 		}
 		// Custom fog

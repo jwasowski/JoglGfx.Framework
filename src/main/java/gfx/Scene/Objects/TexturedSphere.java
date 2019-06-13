@@ -35,11 +35,11 @@ public class TexturedSphere implements GfxObjectInterface {
 	private int[] indices;
 	private int m, n, textureId;
 	private float r, R;
-	private boolean rotation;
+	private boolean rotation, orbits;
 	private double time;
 
 	public TexturedSphere(int m, int n, float r, float R, String textureName, float[] initialPosition, float[] scale,
-			boolean rotation) {
+			boolean rotation, boolean orbits) {
 		this.m = m;
 		this.n = n;
 		this.r = r;
@@ -48,7 +48,9 @@ public class TexturedSphere implements GfxObjectInterface {
 		this.initialPosition = initialPosition;
 		this.scale = scale;
 		this.rotation = rotation;
-		System.out.println("Constructor values" + m + " , " + n + " , " + r + " , " + R + " , " + textureName);
+		this.orbits = orbits;
+		System.out.println("Constructor values" + m + " , " + n + " , " + r + " , " + R + " , " + textureName + " , "
+				+ orbits);
 	}
 
 	public void setProgram(ShaderProgramImportModel program) {
@@ -66,13 +68,14 @@ public class TexturedSphere implements GfxObjectInterface {
 		textureId = texture.getTextureObject();
 
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
+		if(orbits == false) {
 		matrixService.setupUnitMatrix(modelMatrix);
 		matrixService.setupUnitMatrix3x3(normalMatrix);
 		matrixService.translate(modelMatrix, initialPosition[0], initialPosition[1], initialPosition[2]);
-		 
+		}
 		if (rotation == true) {
-			matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
-			matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
+			matrixService.rotateAboutXAxis(modelMatrix, 15.5f);
+			matrixService.rotateAboutXAxis3x3(normalMatrix, -15.5f);
 		}
 
 		int counter = 0;
@@ -92,9 +95,6 @@ public class TexturedSphere implements GfxObjectInterface {
 
 			}
 		}
-
-		// System.out.println("TextureNormalVertex-init: " +
-		// Arrays.toString(textureNormalVertex));
 		int k = 0;
 		for (int i = 0; i <= n_ - 1; i++) {
 			for (int j = 0; j <= m_; j++) {
@@ -103,8 +103,7 @@ public class TexturedSphere implements GfxObjectInterface {
 				k++;
 			}
 		}
-		// System.out.println("Indices-init: " + Arrays.toString(indices));
-		// Voa Setup
+		
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in MarsScene-init-1: " + gl4.glGetError());
@@ -149,8 +148,9 @@ public class TexturedSphere implements GfxObjectInterface {
 		gl4.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		if ("8".equals(System.getProperty("java.version").substring(2, 3))
 				|| "9".equals(System.getProperty("java.version"))) {
-			/*deallocator.deallocate(fbVertices);
-			deallocator.deallocate(ibIndices);*/
+			/*
+			 * deallocator.deallocate(fbVertices); deallocator.deallocate(ibIndices);
+			 */
 		} else {
 			System.err.println(
 					"Java version: " + System.getProperty("java.version") + " is not supported by buffer deallocator.");
@@ -168,12 +168,21 @@ public class TexturedSphere implements GfxObjectInterface {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		time = System.currentTimeMillis()/1000f;
+		time = System.currentTimeMillis() / 1000f;
 		gl4.glBindVertexArray(vertexArrayObject[0]);
 		if (rotation == true) {
+			matrixService.rotateAboutXAxis(modelMatrix, -15.5f);
+			matrixService.rotateAboutXAxis3x3(normalMatrix, 15.5f);
 			matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
 			matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
-			//matrixService.translate(modelMatrix, (float) Math.sin(time) , 0f, (float) Math.cos(time) );
+			//TODO Make parameterizable to customize orbit
+			matrixService.translate(modelMatrix, (float) (Math.sin(0.15f) * 1.0f), 0f, (float) -0.08f);
+			
+			matrixService.rotateAboutXAxis(modelMatrix, 15.5f);
+			matrixService.rotateAboutXAxis3x3(normalMatrix, -15.5f);
+		}
+		if (orbits == true) {
+			matrixService.translate(modelMatrix, (float) (Math.sin(1.25f) * 2.2f), 0f , (float) Math.sin(1.05f) * 2.1f);
 		}
 		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
 		program.setMaterial(gl4, material, program.getProgramId());

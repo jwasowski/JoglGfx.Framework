@@ -282,7 +282,7 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 
 	@Override
 	public float[] getProjectionMatrix() {
-		// TODO Auto-generated method stub
+		
 		return projectionMatrix;
 	}
 
@@ -291,5 +291,6 @@ public class WindowFogModelImport implements GLEventListener, DisplayInterface {
 		this.projectionMatrix = projectionMatrix;
 
 	}
+
 
 }

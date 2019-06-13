@@ -18,6 +18,7 @@ import gfx.Scene.Objects.Skybox;
 import gfx.Scene.Objects.TexturedSphere;
 import gfx.Utilities.MatrixService;
 import gfx.Utilities.InputControllers.Keyboard.KeyboardController;
+import gfx.Utilities.InputControllers.Mouse.MouseController;
 import gfx.Utilities.Shaders.ShaderProgramImportModel;
 import gfx.Utilities.Shaders.ShaderProgramSkybox;
 import graphicslib3D.Material;
@@ -32,20 +33,20 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 	private ShaderProgramImportModel program = new ShaderProgramImportModel();
 	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
 	// private ImportedModel importedModel = new ImportedModel();
-	private TexturedSphere mars = new TexturedSphere(20, 30, 1f, 0.75f, "mars_1k_color.jpg", new float[] { 0f, 0f, 9f },
-			new float[] { 1f, 1f, 1f }, true);
-	private TexturedSphere moon = new TexturedSphere(20, 30, 0.5f, 0.25f, "2k_moon.jpg", new float[] { 0f, 0f, 11f },
-			new float[] { 0.3f, 0.3f, 0.3f }, true);
-	private TexturedSphere sun = new TexturedSphere(30, 40, 5f, 2.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f },
-			new float[] { 3f, 3f, 3f }, false);
+	private TexturedSphere mars = new TexturedSphere(40, 50, 1f, 0.75f, "mars_1k_color.jpg",
+			new float[] { 0f, 0f, 20f }, new float[] { 1f, 1f, 1f }, true, false);
+	private TexturedSphere moon = new TexturedSphere(40, 50, 0.5f, 0.25f, "2k_moon.jpg", new float[] { 0f, 0f, 15f },
+			new float[] { 0.3f, 0.3f, 0.3f }, false, true);
+	private TexturedSphere sun = new TexturedSphere(40, 50, 5f, 2.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f },
+			new float[] { 3f, 3f, 3f }, false, false);
 	private Skybox skybox = new Skybox(Arrays.asList("SpaceSkybox/spaceBox_left.png", "SpaceSkybox/spaceBox_right.png",
 			"SpaceSkybox/spaceBox_down.png", "SpaceSkybox/spaceBox_up.png", "SpaceSkybox/spaceBox_front.png",
 			"SpaceSkybox/spaceBox_back.png"));
 	private MatrixService matrixService = new MatrixService();
 	private PositionalLight light = new PositionalLight();
 	private KeyboardController keyboardController = new KeyboardController(mars, this);
+	private MouseController mouseController = new MouseController(this, matrixService);
 
-	private float[] pLocationRaw = new float[16];
 	private Point3D pLocation;
 	private float[] projectionMatrix = new float[16];
 	private float[] viewMatrix = new float[16];
@@ -65,13 +66,12 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 			};
 		});
 		window.addGLEventListener(this);
-		// window.addMouseListener(this);
+		window.addMouseListener(mouseController);
 		window.addKeyListener(keyboardController);
 		window.setSize(width, height);
 		window.setTitle(name);
 		window.setVisible(true);
 		animator.start();
-
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
-		//matrixService.setupUnitMatrix(pLocationRaw);
-		//matrixService.translate(pLocationRaw, 0.0f, 0f, 0f);
+		// matrixService.setupUnitMatrix(pLocationRaw);
+		// matrixService.translate(pLocationRaw, 0.0f, 0f, 0f);
 		pLocation = new Point3D(0f, 0f, 0f, 1f);
 		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
@@ -90,12 +90,12 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		light.setSpecular(new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
 		light.setConstantAtt(0.5f);
 		light.setLinearAtt(0.005f);
-		light.setQuadraticAtt(0.0025f);
+		light.setQuadraticAtt(0.0015f);
 
 		material = new Material();
 		material.setAmbient(new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
 		material.setDiffuse(new float[] { 0.5f, 0.207409f, 0.214076f, 1.0f });
-		material.setSpecular(new float[] { 0.223789f, 0.223789f, 0.223789f, 1.0f });
+		material.setSpecular(new float[] { 0.023789f, 0.023789f, 0.023789f, 1.0f });
 		material.setEmission(new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 		material.setShininess(96.078431f);
 
@@ -109,7 +109,7 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		programId = program.initProgram(gl4);
 		program.useProgram(gl4, state);
 		program.setLight(gl4, light, programId);
-		
+
 		matrixService.setupUnitMatrix(viewMatrix);
 		matrixService.translate(viewMatrix, 0, 0, -20);
 		matrixService.rotateAboutXAxis(viewMatrix, 15);
@@ -147,7 +147,6 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
-		// importedModel.dispose(drawable);
 		skybox.dispose(drawable);
 		mars.dispose(drawable);
 		moon.dispose(drawable);
@@ -167,8 +166,9 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		sun.display(drawable);
 		mars.display(drawable);
+		moon.modelMatrix = mars.modelMatrix.clone();
+		moon.normalMatrix = mars.normalMatrix.clone();
 		moon.display(drawable);
-		
 
 		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
@@ -218,25 +218,25 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 
 	@Override
 	public float[] getViewMatrix() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return viewMatrix;
 	}
 
 	@Override
 	public void setViewMatrix(float[] viewMatrix) {
-		// TODO Auto-generated method stub
+		this.viewMatrix = viewMatrix;
 
 	}
 
 	@Override
 	public float[] getProjectionMatrix() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return projectionMatrix;
 	}
 
 	@Override
 	public void setProjectionMatrix(float[] projectionMatrix) {
-		// TODO Auto-generated method stub
+		this.projectionMatrix = projectionMatrix;
 
 	}
 }
