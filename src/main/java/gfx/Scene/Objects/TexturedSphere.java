@@ -18,65 +18,79 @@ import graphicslib3D.Material;
 public class TexturedSphere implements GfxObjectInterface {
 	protected final int[] vertexArrayObject = new int[1];
 	protected final int[] vertexBufferObject = new int[1];
-	public float[] modelMatrix = new float[16];
+	protected final int[] indexBufferObject = new int[1];
+	private float[] modelMatrix = new float[16];
+	private float[] auxMatrix = new float[16];
 	public float[] viewMatrix;
-	public float[] normalMatrix = new float[9];
+	private float[] normalMatrix = new float[9];
 	private ShaderProgramImportModel program;
 	protected FloatBuffer fbVertices;
 	protected IntBuffer ibIndices;
 	private DeallocationHelper deallocator;
-	protected final int[] indexBufferObject = new int[1];
 	private MatrixService matrixService = new MatrixService();
 	private TextureLoader textureLoader = new TextureLoader();
 	public Material material;
 	private Texture texture;
 	private String textureName;
-	private float[] textureNormalVertex, initialPosition, scale;
+	private float[] textureNormalVertex, initialPosition;
 	private int[] indices;
 	private int m, n, textureId;
-	private float r, R;
-	private boolean rotation, orbits;
-	private double time;
+	private float R, rotationAngle, animationCoefficient, animationCoefficientSecond;
+	private boolean objectIsAnimated, orbits;
 
-	public TexturedSphere(int m, int n, float r, float R, String textureName, float[] initialPosition, float[] scale,
-			boolean rotation, boolean orbits) {
+	/** Texture sphere requires additional setup in Display init method.
+	 * @param m                    - sphere precision value,
+	 * @param n                    - sphere precision value,
+	 * @param R                    - sphere radius,
+	 * @param textureName          - texture filename,
+	 * @param initialPosition      - x, y, z of rendering starting position,
+	 * @param objectIsAnimated     - defines if object is animated,
+	 * @param orbits               - defines if it is orbiting object,
+	 * @param rotationAngle        - defines animation rotation angle (0.0f if no rotation),
+	 * @param animationCoefficient - defines animation distance (0.0f if no animation),
+	 */
+	public TexturedSphere(int m, int n, float R, String textureName, float[] initialPosition, boolean objectIsAnimated,
+			boolean orbits, float rotationAngle, float animationCoefficient, float animationCoefficientSecond) {
 		this.m = m;
 		this.n = n;
-		this.r = r;
 		this.R = R;
 		this.textureName = textureName;
 		this.initialPosition = initialPosition;
-		this.scale = scale;
-		this.rotation = rotation;
+		this.objectIsAnimated = objectIsAnimated;
 		this.orbits = orbits;
-		System.out.println("Constructor values" + m + " , " + n + " , " + r + " , " + R + " , " + textureName + " , "
-				+ orbits);
+		this.rotationAngle = rotationAngle;
+		this.animationCoefficient = animationCoefficient;
+		this.animationCoefficientSecond = animationCoefficientSecond;
 	}
 
 	public void setProgram(ShaderProgramImportModel program) {
 		this.program = program;
 	}
 
+	public float[] getModelMatrix() {
+		return modelMatrix;
+	}
+
+	public void setModelMatrix(float[] modelMatrix) {
+		this.modelMatrix = modelMatrix.clone();
+	}
+
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
 		int m_ = m, n_ = n;
-		System.out.println("Init values" + m + " , " + n + " , " + r + " , " + R + " , " + textureName);
 		textureNormalVertex = new float[((m + 1) * (n + 1)) * 9]; // 651*9
 		indices = new int[2 * n * (m + 1)];
 		texture = textureLoader.loadTexture(textureName);
 		textureId = texture.getTextureObject();
 
 		gl4.glEnable(GL4.GL_DEPTH_TEST);
-		if(orbits == false) {
-		matrixService.setupUnitMatrix(modelMatrix);
+		if (orbits == false) {
+			matrixService.setupUnitMatrix(modelMatrix);
+			matrixService.translate(modelMatrix, initialPosition[0], initialPosition[1], initialPosition[2]);
+		}
+		matrixService.setupUnitMatrix(auxMatrix);
 		matrixService.setupUnitMatrix3x3(normalMatrix);
-		matrixService.translate(modelMatrix, initialPosition[0], initialPosition[1], initialPosition[2]);
-		}
-		if (rotation == true) {
-			matrixService.rotateAboutXAxis(modelMatrix, 15.5f);
-			matrixService.rotateAboutXAxis3x3(normalMatrix, -15.5f);
-		}
 
 		int counter = 0;
 		for (int i = 0; i <= n_; i++) {
@@ -103,7 +117,7 @@ public class TexturedSphere implements GfxObjectInterface {
 				k++;
 			}
 		}
-		
+
 		gl4.glGenVertexArrays(1, vertexArrayObject, 0);
 		if (gl4.glGetError() != 0 || gl4.glGetError() != GL4.GL_NO_ERROR) {
 			System.err.println("Error code in MarsScene-init-1: " + gl4.glGetError());
@@ -168,25 +182,25 @@ public class TexturedSphere implements GfxObjectInterface {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		final GL4 gl4 = drawable.getGL().getGL4();
-		time = System.currentTimeMillis() / 1000f;
 		gl4.glBindVertexArray(vertexArrayObject[0]);
-		if (rotation == true) {
-			matrixService.rotateAboutXAxis(modelMatrix, -15.5f);
-			matrixService.rotateAboutXAxis3x3(normalMatrix, 15.5f);
-			matrixService.rotateAboutYAxis(modelMatrix, 0.5f);
-			matrixService.rotateAboutYAxis3x3(normalMatrix, -0.5f);
-			//TODO Make parameterizable to customize orbit
-			matrixService.translate(modelMatrix, (float) (Math.sin(0.15f) * 1.0f), 0f, (float) -0.08f);
-			
-			matrixService.rotateAboutXAxis(modelMatrix, 15.5f);
-			matrixService.rotateAboutXAxis3x3(normalMatrix, -15.5f);
+		if (objectIsAnimated == true) {
+			matrixService.rotateAboutYAxis(modelMatrix, rotationAngle);
+			matrixService.rotateAboutYAxis3x3(normalMatrix, -rotationAngle);
+			matrixService.translate(modelMatrix, (float) (Math.sin(animationCoefficient) * 1.0f), 0f, (float) animationCoefficientSecond);
+
 		}
 		if (orbits == true) {
-			matrixService.translate(modelMatrix, (float) (Math.sin(1.25f) * 2.2f), 0f , (float) Math.sin(1.05f) * 2.1f);
+			auxMatrix[12] = modelMatrix[12];
+			auxMatrix[13] = modelMatrix[13];
+			auxMatrix[14] = modelMatrix[14];
+			matrixService.rotateAboutYAxis(this.auxMatrix, rotationAngle);
+			matrixService.rotateAboutYAxis3x3(this.normalMatrix, -rotationAngle);
+			matrixService.translate(auxMatrix, (float) (Math.sin(animationCoefficient) * 2.0f), 0f, (float) animationCoefficientSecond);
+
 		}
-		program.setModelMatrix(gl4, modelMatrix, program.getProgramId());
-		program.setMaterial(gl4, material, program.getProgramId());
+		program.setModelMatrix(gl4, orbits == true ? auxMatrix : modelMatrix, program.getProgramId());
 		program.setNormalMatrix(gl4, normalMatrix, program.getProgramId());
+		program.setMaterial(gl4, material, program.getProgramId());
 
 		gl4.glActiveTexture(GL4.GL_TEXTURE0);
 		gl4.glBindTexture(GL4.GL_TEXTURE_2D, textureId);

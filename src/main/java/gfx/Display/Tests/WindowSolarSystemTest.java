@@ -33,12 +33,16 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 	private ShaderProgramImportModel program = new ShaderProgramImportModel();
 	private ShaderProgramSkybox skyboxProgram = new ShaderProgramSkybox();
 	// private ImportedModel importedModel = new ImportedModel();
-	private TexturedSphere mars = new TexturedSphere(40, 50, 1f, 0.75f, "mars_1k_color.jpg",
-			new float[] { 0f, 0f, 20f }, new float[] { 1f, 1f, 1f }, true, false);
-	private TexturedSphere moon = new TexturedSphere(40, 50, 0.5f, 0.25f, "2k_moon.jpg", new float[] { 0f, 0f, 15f },
-			new float[] { 0.3f, 0.3f, 0.3f }, false, true);
-	private TexturedSphere sun = new TexturedSphere(40, 50, 5f, 2.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f },
-			new float[] { 3f, 3f, 3f }, false, false);
+	private TexturedSphere mars = new TexturedSphere(40, 50, 0.75f, "mars_1k_color.jpg", new float[] { 0f, 0f, 20f },
+			true, false, 0.5f, 0.14f, -0.08f);
+	private TexturedSphere moon = new TexturedSphere(40, 50, 0.25f, "2k_moon.jpg", new float[] { 0f, 0f, 20f }, false,
+			true, 0.5f, 1.25f, -0.08f);
+	private TexturedSphere planet = new TexturedSphere(40, 50, 0.55f, "2k_venus_surface.jpg", new float[] { 0f, 0f, 25f },
+			true, false, 0.5f, 0.19f, -0.10f);
+	private TexturedSphere moonTwo = new TexturedSphere(40, 50, 0.25f, "2k_haumea_fictional.jpg", new float[] { 0f, 0f, 25f }, false,
+			true, -1.5f, 1.25f, 0.09f);
+	private TexturedSphere sun = new TexturedSphere(40, 50, 2.75f, "2k_sun.jpg", new float[] { 0f, 0f, 0f }, false,
+			false, 0.0f, 0.0f, 0.0f);
 	private Skybox skybox = new Skybox(Arrays.asList("SpaceSkybox/spaceBox_left.png", "SpaceSkybox/spaceBox_right.png",
 			"SpaceSkybox/spaceBox_down.png", "SpaceSkybox/spaceBox_up.png", "SpaceSkybox/spaceBox_front.png",
 			"SpaceSkybox/spaceBox_back.png"));
@@ -81,8 +85,6 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		System.out.println("GL_VERSION: " + gl4.glGetString(GL4.GL_VERSION));
 		drawable.setGL(new DebugGL4(gl4));
 		// Light SETUP
-		// matrixService.setupUnitMatrix(pLocationRaw);
-		// matrixService.translate(pLocationRaw, 0.0f, 0f, 0f);
 		pLocation = new Point3D(0f, 0f, 0f, 1f);
 		light.setPosition(pLocation);
 		light.setAmbient(new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
@@ -126,6 +128,14 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		moon.viewMatrix = viewMatrix;
 		moon.material = material;
 		moon.init(drawable);
+		planet.setProgram(program);
+		planet.viewMatrix = viewMatrix;
+		planet.material = material;
+		planet.init(drawable);
+		moonTwo.setProgram(program);
+		moonTwo.viewMatrix = viewMatrix;
+		moonTwo.material = material;
+		moonTwo.init(drawable);
 		sun.setProgram(program);
 		sun.viewMatrix = viewMatrix;
 		sun.material = sunMaterial;
@@ -166,9 +176,11 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 		program.setViewMatrix(gl4, viewMatrix, programId);
 		sun.display(drawable);
 		mars.display(drawable);
-		moon.modelMatrix = mars.modelMatrix.clone();
-		moon.normalMatrix = mars.normalMatrix.clone();
+		moon.setModelMatrix(mars.getModelMatrix());
 		moon.display(drawable);
+		planet.display(drawable);
+		moonTwo.setModelMatrix(planet.getModelMatrix());
+		moonTwo.display(drawable);
 
 		skyboxProgram.useProgram(gl4, state);
 		skyboxProgram.setProjectionMatrix(gl4, projectionMatrix, skyboxProgramId);
@@ -218,7 +230,7 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 
 	@Override
 	public float[] getViewMatrix() {
-		
+
 		return viewMatrix;
 	}
 
@@ -230,7 +242,7 @@ public class WindowSolarSystemTest implements GLEventListener, DisplayInterface 
 
 	@Override
 	public float[] getProjectionMatrix() {
-		
+
 		return projectionMatrix;
 	}
 

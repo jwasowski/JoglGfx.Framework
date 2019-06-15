@@ -32,7 +32,7 @@ public class Main {
 		//WindowTextureTest textureTest = new WindowTextureTest(window, animator, width, height, "Texturing test");
 		//WindowSkyboxTest skyboxTest = new WindowSkyboxTest(window, animator, width, height, "Skybox test");
 		//WindowFogModelImport fogModelImport = new WindowFogModelImport(window, animator, width, height, "Imported model");
-		WindowSolarSystemTest solarTest = new WindowSolarSystemTest(window, animator, width, height, "Solar system test");
+		WindowSolarSystemTest solarTest = new WindowSolarSystemTest(window, animator, width, height, "Lightning test in Solar System");
 	}
 
 }
