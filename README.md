@@ -8,6 +8,9 @@ Goals for future versions:<br />
 Wavefront OBJ model importer and Skybox implementation -> Framework version 0.5<br /> 
 Fog implementation -> Framework version 0.62<br />
 Transparency implementation -> Framework version 0.64<br />
+GLM Math library implementation -> Framework version 0.65<br />
+Mouse Controller implementation -> Framework version 0.66<br />
+FPS camera controller implementation -> Framework version 0.67<br />
 Sprites implementation -> Framework version 0.75<br /> 
 Bump mapping implementation -> Framework version 0.87<br />
 Depth of field implementation -> Framework version 1.0<br /> 
